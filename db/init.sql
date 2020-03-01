@@ -1,0 +1,2 @@
+CREATE DATABASE IF NOT EXISTS sentinel-log_dev;
+CREATE DATABASE IF NOT EXISTS sentinel-log_tst;
