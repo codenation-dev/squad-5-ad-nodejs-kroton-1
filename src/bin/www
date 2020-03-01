@@ -1,4 +1,4 @@
-#!/usr/bin/env node -> SHibeng #! dao essa caracteristica.
+#!/usr/bin/env node
 
 
 const { app } = require('../app')
