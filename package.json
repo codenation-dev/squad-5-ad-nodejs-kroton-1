@@ -1,0 +1,19 @@
+{
+  "name": "central-erros",
+  "version": "1.0.0",
+  "description": "## Objetivo",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codenation-dev/squad-5-ad-nodejs-kroton-1.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/codenation-dev/squad-5-ad-nodejs-kroton-1/issues"
+  },
+  "homepage": "https://github.com/codenation-dev/squad-5-ad-nodejs-kroton-1#readme"
+}
