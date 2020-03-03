@@ -13,4 +13,8 @@ router.get('/', (req, res) => {
 router.use('/users', users)
 router.use('/logs', logs)
 
+<<<<<<< HEAD
 module.exports = router 
+=======
+module.exports = router
+>>>>>>> 29f8e7248bf0afd63c3e04503faa60cf526804a4
