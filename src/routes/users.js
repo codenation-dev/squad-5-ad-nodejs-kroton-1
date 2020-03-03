@@ -8,7 +8,7 @@ router.get('/:userId', controller.getById)
 
 router.post('/', controller.create)
 
-router.post('/:userId', controller.getById)
+router.patch('/:userId', controller.getById)
 
 router.patch('/:userId/changePass', controller.update)
 
