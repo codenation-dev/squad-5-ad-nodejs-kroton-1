@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/codenation-dev/squad-5-ad-nodejs-kroton-1#readme",
   "dependencies": {
+    "dotenv": "^8.2.0",
     "mysql2": "^2.1.0",
     "sequelize": "^5.21.5"
   }
