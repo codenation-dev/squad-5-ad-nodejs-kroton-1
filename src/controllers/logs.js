@@ -56,8 +56,11 @@ Logs.getById = async (req, res, next) => {
 }
 
 Logs.create = async (req, res, next) => {
-    const result = await logsModel.create(req.body)  
-    res.status(201).json({ result })
+  if (req.body.source_address === undefined) {
+    req.body.source_address = req.ip
+  }
+  const result = await logsModel.create(req.body)  
+  res.status(201).json({ result })
 }
 
 Logs.delete = async (req, res, next) => {
@@ -71,7 +74,7 @@ Logs.delete = async (req, res, next) => {
     res.status(400).json({ error: `Log is not found`})
   }
 
-  result.destroy()
+  await result.destroy()
 
   res.status(204).json({ result })
 }
@@ -92,7 +95,7 @@ Logs.archive = async (req, res, next) => {
       console.log(archived)
 
       result.archived = archived
-      result.save()
+      await result.save()
       
       res.status(204).json({})
     } else {
