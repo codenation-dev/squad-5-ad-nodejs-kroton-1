@@ -24,6 +24,11 @@ module.exports = (sequelize, Datatypes) =>
             type:Datatypes.STRING,
             allowNull:false
         },
+        archived: {
+            type: Datatypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
+        }
     },
     {
         paranoid:true

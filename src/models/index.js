@@ -28,7 +28,7 @@ Logs.belongsTo(Users)
 const db = {}
 
 db[Users.name] = Users
-db[Logs.title] = Logs
+db[Logs.name] = Logs
 
 db.sequelize = sequelize
 db.Sequelize = Sequelize
