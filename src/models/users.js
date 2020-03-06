@@ -17,4 +17,7 @@ module.exports = (sequelize, Datatypes) =>
             allowNull:false,
             unique:true
         }
+    },
+    {
+        paranoid:true
     })

@@ -4,6 +4,7 @@
   "description": "## Objetivo",
   "main": "index.js",
   "scripts": {
+    "dev": "nodemon src/bin/www",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -18,7 +19,9 @@
   "homepage": "https://github.com/codenation-dev/squad-5-ad-nodejs-kroton-1#readme",
   "dependencies": {
     "dotenv": "^8.2.0",
+    "express": "^4.17.1",
     "mysql2": "^2.1.0",
+    "nodemon": "^2.0.2",
     "sequelize": "^5.21.5"
   }
 }
