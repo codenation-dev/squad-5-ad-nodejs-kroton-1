@@ -1,23 +1,43 @@
 const { Op } = require('sequelize')
 
-const queryParams = (query) => {
-  const where = processFilter(query)
-  const order = processOrder(query)
+module.exports = {
+  async validate(req, res, next) {
+    const order = processOrder(req.query)
+    const environment = processEnvironment(req.query)
+    const filters = processFilter(req.query)
 
-  const environment = processEnvironment(query)
-  if (environment.value !== undefined) {
-    where.environment = environment.value
+    if (environment.error) {
+      res.status(400).json({ errors: environment.errors })
+      return
+    }
+
+    const where = {}
+
+    if (environment.value !== undefined) {
+      where.environment = environment.value
+    }
+
+    for (const filter in filters) {
+      where[filter] = filters[filter]
+    }
+
+    req.where = where
+    req.order = order
+
+    next()
   }
-    
-  const output = {
-    where,
-    order,
-    error: environment.error,
-    errors: environment.errors,
-  }
-  
-  return output
 }
+
+const processOrder = query => {
+  let output = []
+
+  const { order } = query
+  if (order !== undefined) {
+      output = order.split(',')
+  }
+
+  return output  
+}  
 
 const processEnvironment = query => {
   const output = {
@@ -25,7 +45,7 @@ const processEnvironment = query => {
     errors: [],
     value: undefined,
   }
-
+  
   const { environment } = query
   if (environment !== undefined) {
     const environments = ['prod', 'homolog', 'dev']
@@ -54,6 +74,8 @@ const processFilter = query => {
   if (filter !== undefined) {    
     const filters = filter.split(';')
 
+    console.log('filter', filters)
+
     const operators = {
       '>=': Op.gte,
       '>': Op.gt,
@@ -71,42 +93,28 @@ const processFilter = query => {
 
           if (oper === '=') {
             output[field] = processEqualOperator(value)
-          } else {          
+          } else {                      
             const operator = operators[oper]
-            output[field] = { operator: value }
+            output[field] = { [operator]: value }
           }
           break
         }
       }
     })
   }
-  
   return output
 }
-
+  
 const processEqualOperator = (value) => {
   if (value.includes('*')) {
-    value = value.replace(/\*/g, '%')
-    return { [Op.like]: value }
+      value = value.replace(/\*/g, '%')
+      return { [Op.like]: value }
   }
 
   if (value.includes(',')) {
-    value = value.split(',')
-    return { [Op.in]: value }
+      value = value.split(',')
+      return { [Op.in]: value }
   }
 
   return { [Op.eq]: value }
 }
-
-const processOrder = query => {
-  let output = []
-
-  const { order } = query
-  if (order !== undefined) {
-    output = order.split(',')
-  }
-
-  return output  
-}
-
-module.exports = queryParams
