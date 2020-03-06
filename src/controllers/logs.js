@@ -1,20 +1,13 @@
 const logsModel = require('../models')['logs']
 const usersModel = require('../models')['users']
-const queryParams = require('./queryParams')
 
 let Logs = {}
 
 Logs.getAll = async (req, res, next) => {
-  const params = queryParams(req.query)
-
-  if (params.error) {
-    res.status(400).json({ errors: params.errors })
-  }
-
   try {
     const data = await logsModel.findAll({
-        where: params.where,
-        order: params.order,
+        where: req.where,
+        order: req.order,
         attributes: ['id', 'title', 'level', 'events', 'environment', 'source_address', 'archived', 'createdAt'],
         include: [{
           model: usersModel,
