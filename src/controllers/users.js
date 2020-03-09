@@ -9,7 +9,7 @@ let Users = {}
 Users.getAll = async (req, res, next) => {
   try {
     const data = await model.findAll({
-      attributes: ['id', 'name', 'token', 'createdAt', 'updatedAt']
+      attributes: ['id', 'name', 'email', 'token', 'createdAt', 'updatedAt']
     })
     
     res.status(200).json({
@@ -22,65 +22,85 @@ Users.getAll = async (req, res, next) => {
 }
 
 Users.getById = async (req, res, next) => {
-  const id = req.params.userId
-  return model.findOne({
-      where:{ id },
-      attributes: ['id', 'name', 'token', 'createdAt', 'updatedAt']
-    })
-    .then(result => {
-      if(!result) {
-        return res.status(404).json({ error: `The record ${id} couldn't be found.` })  
-      }
-      return res.status(200).json(result)
-    })
-    .catch(next)
+  try {
+    const id = req.params.userId
+    const user = await getUserById(id)
+    if (user) {
+      res.status(200).json(user)
+    } else {
+      res.status(404).json({ error: `The user id ${id} couldn't be found.` })
+    }
+  } catch(e) {
+    res.status(400).json({ error: e.parent.sqlMessage })
+  }    
 }
 
 Users.create = async (req, res, next) => {
-  let {name, email, password} = req.body
-  if(name.length <= 0 || email.length <= 0 || password.length <= 0) {
-      return res.json({error:'Os campos não podem estar em branco'})
+  let { name, email, password = '' } = req.body
+
+  if (password === '') {
+    return res.status(400).json({ error: 'The password field cannot be empty'})
   }
-  const findUser = await model.findOne({
-      where:{email}
-  })
-  if(findUser) {
-      return res.json({error:'E-mail ja cadastrado'})
+
+  if (password.length < 8) {
+    return res.status(400).json({ error: 'The password field must be at least 8 characters' })
   }
-  if(password.length < 8) {
-      return res.json({error:'A senha deve possuir 8 caracteres ou mais'})
-  }
+
   password = md5(password)
   const token = crypto.randomBytes(20).toString('hex')
   
-  return (model.create({name, email, password, token}))
-    .then(result => res.status(201).json(result))
-    .catch(next)
+  try {
+    const user = await model.create({ name, email, password, token })
+    res.status(201).json(user)
+  } catch(e) {
+    next(e)
+  }
 }
 
 Users.update = async (req, res, next) => {
   const id = req.params.userId
-  let data = req.body
-  return model.update(data, {where: {id}})
-    .then(result => {
-      if(!result[0]) {
-        return res.status(404).json({ error: `The record ${id} couldn't be found.` })  
+  const user = await getUserById(id)
+
+  if (user) {
+    for (const prop in req.body) {
+      if (user[prop]) {
+        user[prop] = req.body[prop]
       }
-      return res.status(200).json({data})
-    })
-    .catch(next)
+    }
+    try {
+      await user.save()
+      return res.status(200).json(user)
+    } catch(e) {
+      next(e)
+    }    
+  } else {
+    return res.status(404).json({ error: `The user id ${id} couldn't be found.` })  
+  }
 }
 
 Users.delete = async (req, res, next) => {
   const id = req.params.userId
-  return model.destroy({where:{id}})
-    .then(result => {
-      if(result === 0) {
-        return res.status(404).json({ error: `The record ${id} couldn't be found.` })  
-      }
-      return res.status(200)
-    })
-    .catch(next)
+  const user = await getUserById(id)
+
+  if (user) {
+    try {
+      await user.destroy()
+      res.status(204).end()
+    } catch(e) {
+      next(e)
+    }      
+  } else {
+    res.status(404).json({ error: `The user id ${id} couldn't be found.` })
+  }
+}
+
+const getUserById = async id => {
+  const user = await model.findOne({
+    where: { id },
+    attributes: ['id', 'name', 'email', 'token', 'createdAt', 'updatedAt']
+  })
+
+  return user
 }
 
 module.exports = Users
