@@ -8,11 +8,13 @@ router.get('/:userId', controller.getById)
 
 router.post('/', controller.create)
 
-router.patch('/:userId', controller.getById)
+//router.post('/login', authentication.findOne)
 
-router.patch('/:userId/changePass', controller.update)
+router.patch('/:userId', controller.update)
 
-router.patch('/:userId/forgottenPass', controller.update)
+//router.patch('/:userId/changePass', controller.update)
+
+//router.patch('/:userId/forgottenPass', controller.update)
 
 router.delete('/:userId', controller.delete)
 
