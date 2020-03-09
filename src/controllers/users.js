@@ -53,7 +53,7 @@ Users.update = async (req, res, next) => {
     let data = req.body
     return model.update(data, {where: {id}})
       .then(result => {
-        if(!result) {
+        if(!result[0]) {
           return res.status(404).json({ error: `The record ${id} couldn't be found.` })  
         }
         return res.status(200).json({data})
