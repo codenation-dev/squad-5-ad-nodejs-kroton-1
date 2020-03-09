@@ -7,13 +7,18 @@ const jwt = require('jsonwebtoken')
 let Users = {}
 
 Users.getAll = async (req, res, next) => {
-  const data = await model.findAll({
+  try {
+    const data = await model.findAll({
       attributes: ['id', 'name', 'token', 'createdAt', 'updatedAt']
     })
+    
     res.status(200).json({
       total: data.length,
       data    
     })
+  } catch(e) {
+    res.status(400).json({ error: e.parent.sqlMessage })
+  }
 }
 
 Users.getById = async (req, res, next) => {
