@@ -62,6 +62,7 @@ Users.update = async (req, res, next) => {
   }
 
 Users.delete = async (req, res, next) => {
+    const id = req.params.userId
     return model.destroy({where:{id}})
       .then(result => {
         if(result === 0) {
