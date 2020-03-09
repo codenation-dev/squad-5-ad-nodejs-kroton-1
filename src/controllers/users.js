@@ -7,7 +7,9 @@ const jwt = require('jsonwebtoken')
 let Users = {}
 
 Users.getAll = async (req, res, next) => {
-    const data = await model.findAll()
+    const data = await model.findAll({
+        attributes: ['id', 'name', 'token', 'createdAt', 'updatedAt']
+      })
       res.status(200).json({
         total: data.length,
         data    
@@ -16,7 +18,10 @@ Users.getAll = async (req, res, next) => {
 
 Users.getById = async (req, res, next) => {
     const id = req.params.userId
-    return model.findOne({where:{id}})
+    return model.findOne({
+        where:{ id },
+        attributes: ['id', 'name', 'token', 'createdAt', 'updatedAt']
+      })
       .then(result => {
         if(!result) {
           return res.status(404).json({ error: `The record ${id} couldn't be found.` })  
