@@ -9,7 +9,7 @@ let Users = {}
 Users.getAll = async (req, res, next) => {
     const data = await model.findAll()
       res.status(200).json({
-        total: data.lenght,
+        total: data.length,
         data    
       })
   }
