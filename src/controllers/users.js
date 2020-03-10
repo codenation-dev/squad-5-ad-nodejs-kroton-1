@@ -17,7 +17,7 @@ Users.getAll = async (req, res, next) => {
       data    
     })
   } catch(e) {
-    res.status(400).json({ error: e.parent.sqlMessage })
+    next(e)
   }
 }
 
@@ -31,7 +31,7 @@ Users.getById = async (req, res, next) => {
       res.status(404).json({ error: `The user id ${id} couldn't be found.` })
     }
   } catch(e) {
-    res.status(400).json({ error: e.parent.sqlMessage })
+    next(e)
   }    
 }
 
