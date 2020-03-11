@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken')
+const User = require('../models')['users']
 
 module.exports = {
   async validate(req, res, next) {
@@ -12,12 +13,16 @@ module.exports = {
     try {
       const token = req.headers.authorization
       const decode = jwt.verify(token, process.env.JWT_KEY)
-      req.user = decode
+
+      user = await User.findOne({ where: { email: decode.email } })
+
+      req.user = user
+
       next()
     } catch(err){
       return res.status(401).json({error:'Authentication failure'})
     }    
-  }
+  },
 
   async isAdmin(req, res, next) {
     if (!req.user.admin) {
