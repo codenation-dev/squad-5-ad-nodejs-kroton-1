@@ -14,7 +14,10 @@ module.exports = (sequelize, Datatypes) =>
         },
         events:{
             type:Datatypes.INTEGER,
-            allowNull:false
+            allowNull:false,
+            validate: {
+                isInt: true,
+            }
         },
         environment:{
             type:Datatypes.ENUM('prod', 'homolog', 'dev'),
