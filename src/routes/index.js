@@ -4,9 +4,11 @@ const users = require('./users')
 const logs = require('./logs')
 
 router.get('/', (req, res) => {
+  const protocol = req.protocol
+  const host = req.get('host')
   res.json({
-    users: 'http://localhost:8080/v1/users',
-    logs: 'http://localhost:8080/v1/logs',
+    users: `${protocol}://${host}/v1/users`,
+    logs: `${protocol}://${host}/v1/logs`,
   })
 })
 
