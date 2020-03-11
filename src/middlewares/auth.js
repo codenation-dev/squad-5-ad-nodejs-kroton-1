@@ -18,6 +18,14 @@ module.exports = {
       return res.status(401).json({error:'Authentication failure'})
     }    
   }
+
+  async isAdmin(req, res, next) {
+    if (!req.user.admin) {
+      return res.status(403).json({ error: `You don't have access to this feature` })
+    }
+
+    next()
+  }
 }
 
 function getUrl(req) {
