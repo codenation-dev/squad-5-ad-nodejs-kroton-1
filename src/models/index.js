@@ -21,14 +21,21 @@ const Users = sequelize.import(
   path.join(__dirname, 'users.js')
 )
 
+const Applications = sequelize.import(
+  path.join(__dirname, 'applications.js')
+)
 
-Users.hasMany(Logs)
-Logs.belongsTo(Users)
+
+Users.hasMany(Applications)
+Applications.belongsTo(Users)
+Applications.hasMany(Logs)
+Logs.belongsTo(Applications)
 
 const db = {}
 
 db[Users.name] = Users
 db[Logs.name] = Logs
+db[Applications.name] = Applications
 
 db.sequelize = sequelize
 db.Sequelize = Sequelize
