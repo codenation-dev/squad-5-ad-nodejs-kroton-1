@@ -20,6 +20,6 @@ router.get('/', (req, res) => {
 router.use('/login', login)
 router.use('/users', auth.validate, auth.isAdmin, users)
 router.use('/logs', auth.validate, logs)
-router.use('/applications', applications)
+router.use('/applications', auth.validate,  auth.isAdmin, applications)
 
 module.exports = router 

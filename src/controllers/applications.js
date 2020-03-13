@@ -33,10 +33,11 @@ Applications.getById = async (req, res, next) =>{
 
 Applications.create = async (req, res, next) =>{
 	try {
-		let { name, description = '' } = req.body
+    let { name, description = '' } = req.body
+    let userId = req.user.id
 		const token = crypto.randomBytes(20).toString('hex')
-
-		const result = await model.create({ name, description, token })
+    
+		const result = await model.create({ name, description, token, userId })
 
 		res.status(201).json(result)
 	} catch(e) {
