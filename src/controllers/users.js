@@ -9,7 +9,7 @@ let Users = {}
 Users.getAll = async (req, res, next) => {
   try {
     const data = await model.findAll({
-      attributes: ['id', 'name', 'email', 'token', 'createdAt', 'updatedAt']
+      attributes: ['id', 'name', 'email', 'createdAt', 'updatedAt']
     })
     
     res.status(200).json({
@@ -97,7 +97,7 @@ Users.delete = async (req, res, next) => {
 const getUserById = async id => {
   const user = await model.findOne({
     where: { id },
-    attributes: ['id', 'name', 'email', 'token', 'createdAt', 'updatedAt']
+    attributes: ['id', 'name', 'email', 'createdAt', 'updatedAt']
   })
 
   return user
