@@ -5,6 +5,10 @@ let Logs = {}
 
 Logs.getAll = async (req, res, next) => {
   try {
+    if (!req.user.admin) {
+      req.where.userId = req.user.id
+    }
+
     const data = await logsModel.findAll({
         where: req.where,
         order: req.order,
@@ -42,6 +46,10 @@ Logs.getById = async (req, res, next) => {
       res.status(400).json({ error: `Log is not found`})
     }
 
+    if ((!req.user.admin) && (result.userId !== req.user.id)) {
+      return res.status(403).json({ error: `You don't have access to this feature` })
+    }
+
     res.status(200).json(result)
   } catch(e) {
     res.status(400).json({ error: e.parent.sqlMessage })
@@ -67,6 +75,10 @@ Logs.delete = async (req, res, next) => {
     res.status(400).json({ error: `Log is not found`})
   }
 
+  if ((!req.user.admin) && (result.userId !== req.user.id)) {
+    return res.status(403).json({ error: `You don't have access to this feature` })
+  }  
+
   await result.destroy()
 
   res.status(204).json({ result })
@@ -85,7 +97,9 @@ Logs.archive = async (req, res, next) => {
       res.status(400).json({ error: `Log is not found`})
     }
   
-    console.log(archived)
+    if ((!req.user.admin) && (result.userId !== req.user.id)) {
+      return res.status(403).json({ error: `You don't have access to this feature` })
+    }
 
     result.archived = archived
     await result.save()
