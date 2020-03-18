@@ -1,16 +1,22 @@
 const express = require('express')
 const router = express.Router()
+const auth = require('../middlewares/auth')
+const login = require('./login')
 const users = require('./users')
 const logs = require('./logs')
 
 router.get('/', (req, res) => {
+  const protocol = req.protocol
+  const host = req.get('host')
   res.json({
-    users: 'http://localhost:8080/v1/users',
-    logs: 'http://localhost:8080/v1/logs',
+    login: `${protocol}://${host}/v1/login`,
+    users: `${protocol}://${host}/v1/users`,
+    logs: `${protocol}://${host}/v1/logs`,
   })
 })
 
-router.use('/users', users)
-router.use('/logs', logs)
+router.use('/login', login)
+router.use('/users', auth.validate, auth.isAdmin, users)
+router.use('/logs', auth.validate, logs)
 
 module.exports = router 

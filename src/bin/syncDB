@@ -2,5 +2,44 @@
 
 const db = require('../models/')
 
-db.sequelize.sync()
-  .then(() => process.exit(0))
+db.sequelize.sync().then(async () => {
+  await createAdmin(db.users)
+  process.exit(0)
+})
+
+async function createAdmin(model) {
+  const md5 = require('md5')
+  const crypto = require('crypto')
+  
+  const data = {
+    name: 'Administrator',
+    email: 'admin@sentinellog.com.br',
+    password: md5('admin123'),
+    admin: true,
+    token: crypto.randomBytes(20).toString('hex'),
+  }
+
+  const admin = await model.findOne({ where: { email: data.email } })
+  
+  if (admin === null) {
+    try {
+      await model.create(data)
+      console.log('Admin user created!')
+    } catch(e) {
+      console.log('Error ao criar Admin', e)
+    }
+  } else {
+    admin.name = data.name
+    admin.email = data.email
+    admin.password = data.password
+    admin.admin = data.admin
+    admin.token = data.token
+
+    try {
+      await admin.save()
+      console.log('Admin user is updated!')
+    } catch(e) {
+      console.log('Error ao atualizar Admin', e)
+    }
+  }
+}  
