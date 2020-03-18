@@ -2,9 +2,13 @@ const Sequelize = require('sequelize')
 const dbConfig = require('../config/index')
 
 const Users = require('../models/users')
+const Logs = require('../models/logs')
+const Applications = require('../models/applications')
 
 const connection = new Sequelize(dbConfig)
 
 Users.init(connection)
+Logs.init(connection)
+Applications.init(connection)
 
 module.exports = connection
