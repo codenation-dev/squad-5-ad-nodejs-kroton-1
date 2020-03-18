@@ -22,6 +22,10 @@ class logs extends Model {
             paranoid:true
         })
     }
+
+    static associate(models) {
+        this.belongsTo(models.applications, {foreignKey:'applicationId', as:'application'})
+    }
 }
 
 module.exports = logs

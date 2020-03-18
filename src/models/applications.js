@@ -12,6 +12,10 @@ class applications extends Model {
             paranoid: true
         })
     }
+
+    static associate(models) {
+        this.belongsTo(models.users, {foreignKey:'userId', as:'user'})
+    }
 }
 
 module.exports = applications

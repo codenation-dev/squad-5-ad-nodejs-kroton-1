@@ -1,4 +1,4 @@
-const applicationModel = require('../models')['applications']
+const applicationModel = require('../models/applications')
 
 module.exports = {
   async validate(req, res, next) {

@@ -10,6 +10,13 @@ module.exports = {
           allowNull:false,
           unique:true
         },
+        applicationId:{
+          type:Sequelize.INTEGER,
+          allowNull:false,
+          references:{model:'applications', key:'id'},
+          onUpdate:'CASCADE',
+          onDelete:'CASCADE'
+        },
         title:{
             type:Sequelize.STRING,
             allowNull:false
@@ -39,15 +46,15 @@ module.exports = {
             allowNull: false,
             defaultValue: false,
         },
-        created_at:{
+        createdAt:{
           type:Sequelize.DATE,
           allowNull:false
         },
-        updated_at:{
+        updatedAt:{
           type:Sequelize.DATE,
           allowNull:false
         },
-        deleted_at: {
+        deletedAt: {
           type:Sequelize.DATE,
           allowNull:true,
         }

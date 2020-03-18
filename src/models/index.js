@@ -11,4 +11,8 @@ Users.init(connection)
 Logs.init(connection)
 Applications.init(connection)
 
+Users.associate(connection.models)
+Applications.associate(connection.models)
+Logs.associate(connection.models)
+
 module.exports = connection

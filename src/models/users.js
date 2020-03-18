@@ -29,6 +29,10 @@ class users extends Model {
             paranoid: true
         })
     }
+
+    static associate(models) {
+        this.hasMany(models.applications, {foreignKey:'userId', as:'applications'})
+    }
 }
 
 module.exports = users

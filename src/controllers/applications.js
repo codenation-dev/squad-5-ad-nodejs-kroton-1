@@ -1,4 +1,4 @@
-const model = require('../models')['applications']
+const model = require('../models/applications')
 const crypto = require('crypto')
 
 let Applications = {}

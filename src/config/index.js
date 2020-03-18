@@ -11,8 +11,6 @@ module.exports = {
     port:process.env.DB_PORT,
     define:{
         timestamps:true,
-        underscored:true,
-        
     },
     dialectOptions:{
         timezone:'Etc/GMT0',

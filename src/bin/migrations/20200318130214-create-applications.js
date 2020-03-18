@@ -2,7 +2,7 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-      return queryInterface.createTable('users', {
+      return queryInterface.createTable('applications', {
         id: {
           type:Sequelize.INTEGER,
           primaryKey:true,
@@ -10,23 +10,26 @@ module.exports = {
           allowNull:false,
           unique:true
         },
-        name:{
-          type: Sequelize.STRING,
-          allowNull: false,
+        userId:{
+          type:Sequelize.INTEGER,
+          allowNull:false,
+          references:{model:'users', key:'id'},
+          onUpdate:'CASCADE',
+          onDelete:'CASCADE'
         },
-        email: {
-          type: Sequelize.STRING,
-          allowNull: false,
-          unique: true,
+        name: {
+            type: Sequelize.STRING,
+            allowNull: false,
+            unique:true
         },
-        password: {
-          type: Sequelize.STRING(32),
-          allowNull: false,
+        description:{
+            type:Sequelize.TEXT,
+            allowNull:true
         },
-        admin: {
-          type: Sequelize.BOOLEAN,
-          allowNull: false,
-          defaultValue: false,
+        token: {
+            type: Sequelize.STRING(40),
+            allowNull: false,
+            unique: true,
         },
         createdAt:{
           type:Sequelize.DATE,
@@ -41,9 +44,9 @@ module.exports = {
           allowNull:true,
         }
       });
-},
+  },
 
   down: (queryInterface, Sequelize) => {
-      return queryInterface.dropTable('users');
+      return queryInterface.dropTable('applications');
   }
 };
