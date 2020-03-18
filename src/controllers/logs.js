@@ -14,6 +14,7 @@ Logs.getAll = async (req, res, next) => {
         include: {
           association: 'application',
           attributes: ['id', 'name', 'description', 'userId'],
+          where:req.where,
           include:{
             association:'user',
             attributes:['id', 'name'],
