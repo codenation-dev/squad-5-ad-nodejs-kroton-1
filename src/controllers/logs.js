@@ -1,5 +1,6 @@
 const logsModel = require('../models')['logs']
-const usersModel = require('../models')['users']
+const applicationModel = require('../models')['applications']
+const userModel = require('../models')['users']
 
 let Logs = {}
 
@@ -14,8 +15,12 @@ Logs.getAll = async (req, res, next) => {
         order: req.order,
         attributes: ['id', 'title', 'level', 'events', 'environment', 'source_address', 'archived', 'createdAt'],
         include: [{
-          model: usersModel,
-          attributes: ['id', 'name']
+          model: applicationModel,
+          attributes: ['id', 'name', 'description'],
+          include:[{
+            model:userModel,
+            attributes:['id', 'name']
+          }]
         }]
     })
 
@@ -37,8 +42,8 @@ Logs.getById = async (req, res, next) => {
       },
       attributes: ['id', 'title', 'detail', 'level', 'events', 'environment', 'source_address', 'archived', 'createdAt', 'updatedAt', 'deletedAt'],
       include: [{
-        model: usersModel,
-        attributes: ['id', 'name']
+        model: applicationModel,
+        attributes: ['id', 'name',  'description']
       }]      
     })
   
