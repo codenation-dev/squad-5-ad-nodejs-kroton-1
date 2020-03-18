@@ -3,6 +3,8 @@ const bodyParser = require('body-parser')
 const app = express()
 const routes = require('./routes')
 
+require('./models')
+
 app.use(bodyParser.json())
 
 app.use('/v1', routes)

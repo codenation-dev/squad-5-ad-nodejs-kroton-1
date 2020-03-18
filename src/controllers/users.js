@@ -1,6 +1,5 @@
-const model = require('../models')['users']
+const model = require('../models/users')
 const md5 = require('md5')
-const crypto = require('crypto')
 const { Op } = require('sequelize')
 const jwt = require('jsonwebtoken')
 
@@ -47,10 +46,9 @@ Users.create = async (req, res, next) => {
   }
 
   password = md5(password)
-  const token = crypto.randomBytes(20).toString('hex')
   
   try {
-    const user = await model.create({ name, email, password, token })
+    const user = await model.create({ name, email, password, })
     res.status(201).json(user)
   } catch(e) {
     next(e)

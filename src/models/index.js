@@ -1,43 +1,10 @@
 const Sequelize = require('sequelize')
-const path = require('path')
+const dbConfig = require('../config/index')
 
-const config = require('../config')
+const Users = require('../models/users')
 
-const sequelize = new Sequelize(
-  config.db.database,
-  config.db.user,
-  config.db.password,
-  {
-    ...config.db,
-    dialect: 'mysql'
-  }
-)
+const connection = new Sequelize(dbConfig)
 
-const Logs = sequelize.import(
-  path.join(__dirname, 'logs.js')
-)
+Users.init(connection)
 
-const Users = sequelize.import(
-  path.join(__dirname, 'users.js')
-)
-
-const Applications = sequelize.import(
-  path.join(__dirname, 'applications.js')
-)
-
-
-Users.hasMany(Applications)
-Applications.belongsTo(Users)
-Applications.hasMany(Logs)
-Logs.belongsTo(Applications)
-
-const db = {}
-
-db[Users.name] = Users
-db[Logs.name] = Logs
-db[Applications.name] = Applications
-
-db.sequelize = sequelize
-db.Sequelize = Sequelize
-
-module.exports = db
+module.exports = connection

@@ -3,12 +3,19 @@ const {NODE_ENV = 'dev'} = process.env
 require('dotenv').config({path: 'variables.env'})
 
 module.exports = {
-    db: {
-        host: process.env.DB_HOST,
-        user: process.env.DB_USER,
-        password: process.env.DB_PASS,
-        database: `sentinel_log_${NODE_ENV}`
+    dialect:process.env.DB_DIALECT,
+    host: process.env.DB_HOST,
+    username: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: `sentinel_log_${NODE_ENV}`,
+    port:process.env.DB_PORT,
+    define:{
+        timestamps:true,
+        underscored:true,
+        
     },
-    env: NODE_ENV
+    dialectOptions:{
+        timezone:'Etc/GMT0',
+    },
 }
 
