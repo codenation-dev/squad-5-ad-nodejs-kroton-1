@@ -14,10 +14,11 @@ Logs.getAll = async (req, res, next) => {
         include: {
           association: 'application',
           attributes: ['id', 'name', 'description', 'userId'],
-          where:req.where,
+          where:{...req.where, deletedAt:null},
           include:{
             association:'user',
             attributes:['id', 'name'],
+            where:{deletedAt:null}
           }
         },
     })
@@ -46,7 +47,7 @@ Logs.getById = async (req, res, next) => {
     })
   
     if (result === null) {
-      res.status(400).json({ error: `Log is not found`})
+      return res.status(400).json({ error: `Log is not found`})
     }
 
     if ((!req.user.admin) && (result.application.userId !== req.user.id)) {
@@ -73,12 +74,13 @@ Logs.delete = async (req, res, next) => {
   const result = await logsModel.findOne({
     where: { id: logId },
     include:{
-      association:'application'
+      association:'application',
+      where:{deletedAt:null}
     }
   })
 
   if (result === null) {
-    res.status(400).json({ error: `Log is not found`})
+    return res.status(400).json({ error: `Log is not found`})
   }
 
   if ((!req.user.admin) && (result.application.userId !== req.user.id)) {
@@ -98,12 +100,13 @@ Logs.archive = async (req, res, next) => {
     const result = await logsModel.findOne({
       where: { id: logId },
       include:{
-        association:'application'
+        association:'application',
+        where:{deletedAt:null}
       }
     })
     
     if (result === null) {
-      res.status(400).json({ error: `Log is not found`})
+      return res.status(400).json({ error: `Log is not found`})
     }
   
     if ((!req.user.admin) && (result.application.userId !== req.user.id)) {

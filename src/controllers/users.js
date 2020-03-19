@@ -60,6 +60,10 @@ Users.update = async (req, res, next) => {
   const user = await getUserById(id)
 
   if (user) {
+    if ((!req.user.admin) && (user.id !== req.user.id)) {
+      return res.status(403).json({ error: `You don't have access to this feature` })
+    }
+
     for (const prop in req.body) {
       if (user[prop]) {
         user[prop] = req.body[prop]
@@ -81,6 +85,10 @@ Users.delete = async (req, res, next) => {
   const user = await getUserById(id)
 
   if (user) {
+    if ((!req.user.admin) && (user.id !== req.user.id)) {
+      return res.status(403).json({ error: `You don't have access to this feature` })
+    }
+
     try {
       await user.destroy()
       res.status(204).end()

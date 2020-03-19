@@ -4,8 +4,15 @@ const crypto = require('crypto')
 let Applications = {}
 
 Applications.getAll = async (req, res, next) =>{
-	try {
-		let data = await model.findAll()
+  req.where = {}
+  if (!req.user.admin) {
+    req.where.userId = req.user.id
+  }
+  
+  try {
+    let data = await model.findAll({
+      where:req.where
+    })
 
 		res.status(200).json({
 			total:data.length,
@@ -19,9 +26,13 @@ Applications.getAll = async (req, res, next) =>{
 Applications.getById = async (req, res, next) =>{
 	try {
 		const id = req.params.appId
-		const data = await getApplicationById(id)
+    const data = await getApplicationById(id)
 
     if (data) {
+      if ((!req.user.admin) && (data.userId !== req.user.id)) {
+        return res.status(403).json({ error: `You don't have access to this feature` })
+      }
+
       res.status(200).json(data)
     } else {
       res.status(404).json({ error: `The application id ${id} couldn't be found.` })
@@ -34,7 +45,14 @@ Applications.getById = async (req, res, next) =>{
 Applications.create = async (req, res, next) =>{
 	try {
     let { name, description = '' } = req.body
-    let userId = req.user.id
+    let userId
+
+    if(req.user.admin) {
+      userId = req.body.userId || req.user.id
+    } else {
+      userId = req.user.id
+    }
+    
 		const token = crypto.randomBytes(20).toString('hex')
     
 		const result = await model.create({ name, description, token, userId })
@@ -50,6 +68,10 @@ Applications.update = async (req, res, next) =>{
 	const application = await getApplicationById(id)
 
 	if (application) {
+    if ((!req.user.admin) && (application.userId !== req.user.id)) {
+      return res.status(403).json({ error: `You don't have access to this feature` })
+    } 
+
 		let { name, description } = req.body
 		
 		application.name = name || application.name
@@ -68,9 +90,13 @@ Applications.update = async (req, res, next) =>{
 
 Applications.delete = async (req, res, next) =>{
   const id = req.params.appId
-	const application = await getApplicationById(id)
+  const application = await getApplicationById(id) 
 
   if (application) {
+    if ((!req.user.admin) && (application.userId !== req.user.id)) {
+      return res.status(403).json({ error: `You don't have access to this feature` })
+    }
+
     try {
       await application.destroy()
       res.status(204).end()
