@@ -1,6 +1,4 @@
-const logsModel = require('../models')['logs']
-const applicationModel = require('../models')['applications']
-const userModel = require('../models')['users']
+const logsModel = require('../models/logs')
 
 let Logs = {}
 
@@ -11,17 +9,17 @@ Logs.getAll = async (req, res, next) => {
     }
 
     const data = await logsModel.findAll({
-        where: req.where,
         order: req.order,
         attributes: ['id', 'title', 'level', 'events', 'environment', 'source_address', 'archived', 'createdAt'],
-        include: [{
-          model: applicationModel,
-          attributes: ['id', 'name', 'description'],
-          include:[{
-            model:userModel,
-            attributes:['id', 'name']
-          }]
-        }]
+        include: {
+          association: 'application',
+          attributes: ['id', 'name', 'description', 'userId'],
+          where:req.where,
+          include:{
+            association:'user',
+            attributes:['id', 'name'],
+          }
+        },
     })
 
     res.status(200).json({
@@ -42,8 +40,8 @@ Logs.getById = async (req, res, next) => {
       },
       attributes: ['id', 'title', 'detail', 'level', 'events', 'environment', 'source_address', 'archived', 'createdAt', 'updatedAt', 'deletedAt'],
       include: [{
-        model: applicationModel,
-        attributes: ['id', 'name',  'description']
+        association: 'application',
+        attributes: ['id', 'name',  'description', 'userId']
       }]      
     })
   
@@ -51,7 +49,7 @@ Logs.getById = async (req, res, next) => {
       res.status(400).json({ error: `Log is not found`})
     }
 
-    if ((!req.user.admin) && (result.userId !== req.user.id)) {
+    if ((!req.user.admin) && (result.application.userId !== req.user.id)) {
       return res.status(403).json({ error: `You don't have access to this feature` })
     }
 
@@ -73,14 +71,17 @@ Logs.delete = async (req, res, next) => {
   const { logId } = req.params
 
   const result = await logsModel.findOne({
-    where: { id: logId }
+    where: { id: logId },
+    include:{
+      association:'application'
+    }
   })
 
   if (result === null) {
     res.status(400).json({ error: `Log is not found`})
   }
 
-  if ((!req.user.admin) && (result.userId !== req.user.id)) {
+  if ((!req.user.admin) && (result.application.userId !== req.user.id)) {
     return res.status(403).json({ error: `You don't have access to this feature` })
   }  
 
@@ -95,14 +96,17 @@ Logs.archive = async (req, res, next) => {
 
   if (archived !== undefined) {
     const result = await logsModel.findOne({
-      where: { id: logId }
+      where: { id: logId },
+      include:{
+        association:'application'
+      }
     })
     
     if (result === null) {
       res.status(400).json({ error: `Log is not found`})
     }
   
-    if ((!req.user.admin) && (result.userId !== req.user.id)) {
+    if ((!req.user.admin) && (result.application.userId !== req.user.id)) {
       return res.status(403).json({ error: `You don't have access to this feature` })
     }
 

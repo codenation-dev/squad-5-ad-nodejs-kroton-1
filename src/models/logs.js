@@ -1,38 +1,34 @@
-module.exports = (sequelize, Datatypes) =>
-    sequelize.define('logs', {
-        title:{
-            type:Datatypes.STRING,
-            allowNull:false
+const {Model, DataTypes} = require('sequelize')
+
+class logs extends Model {
+    static init(sequelize) {
+        super.init({
+            title:DataTypes.STRING,
+            detail:DataTypes.TEXT,
+            level:DataTypes.ENUM('error', 'warning', 'debug'),
+            events:{
+                type:DataTypes.INTEGER,
+                allowNull:false,
+                validate: {
+                    isInt: true,
+                }
+            },
+            environment:DataTypes.ENUM('prod', 'homolog', 'dev'),
+            source_address:DataTypes.STRING,
+            archived:DataTypes.BOOLEAN
         },
-        detail:{
-            type:Datatypes.TEXT,
-            allowNull:false
-        },
-        level:{
-            type:Datatypes.ENUM('error', 'warning', 'debug'),
-            allowNull:false
-        },
-        events:{
-            type:Datatypes.INTEGER,
-            allowNull:false,
-            validate: {
-                isInt: true,
-            }
-        },
-        environment:{
-            type:Datatypes.ENUM('prod', 'homolog', 'dev'),
-            allowNull:false
-        },
-        source_address:{
-            type:Datatypes.STRING,
-            allowNull:false
-        },
-        archived: {
-            type: Datatypes.BOOLEAN,
-            allowNull: false,
-            defaultValue: false,
-        }
-    },
-    {
-        paranoid:true
-    })
+        {
+            sequelize,
+            paranoid:true
+        })
+    }
+
+    static associate(models) {
+        this.belongsTo(models.applications, {foreignKey:'applicationId', as:'application'})
+    }
+}
+
+module.exports = logs
+
+
+    

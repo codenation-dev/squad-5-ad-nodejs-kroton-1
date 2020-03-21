@@ -1,20 +1,21 @@
-module.exports = (sequelize, Datatypes) =>
-    sequelize.define('applications', {
-        name: {
-            type: Datatypes.STRING,
-            allowNull: false,
-            unique:true
+const {Model, DataTypes} = require('sequelize')
+
+class applications extends Model {
+    static init(sequelize) {
+        super.init({
+        name: DataTypes.STRING,
+        description:DataTypes.TEXT,
+        token:DataTypes.STRING(40)
         },
-        description:{
-            type:Datatypes.TEXT,
-            allowNull:true
-        },
-        token: {
-            type: Datatypes.STRING(40),
-            allowNull: false,
-            unique: true,
-        }
-    },
-    {
-        paranoid: true
-    })
+        {
+            sequelize,
+            paranoid: true
+        })
+    }
+
+    static associate(models) {
+        this.belongsTo(models.users, {foreignKey:'userId', as:'user'})
+    }
+}
+
+module.exports = applications

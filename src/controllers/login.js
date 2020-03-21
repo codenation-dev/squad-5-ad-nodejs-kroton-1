@@ -1,4 +1,4 @@
-const usersModel = require('../models')['users']
+const usersModel = require('../models/users')
 const jwt = require('jsonwebtoken')
 const md5 = require('md5')
 require('dotenv').config({path: 'variables.env'})
