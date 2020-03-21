@@ -18,6 +18,8 @@ module.exports = {
 
       req.user = user
 
+      if(!user) return res.status(401).json({error:'Authentication failure'})
+
       next()
     } catch(err){
       return res.status(401).json({error:'Authentication failure'})

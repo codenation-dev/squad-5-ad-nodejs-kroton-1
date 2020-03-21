@@ -18,8 +18,8 @@ router.get('/', (req, res) => {
 })
 
 router.use('/login', login)
-router.use('/users', users)
+router.use('/users', auth.validate, users)
 router.use('/logs', auth.validate, logs)
-router.use('/applications', auth.validate,  applications)
+router.use('/applications', auth.validate, applications)
 
 module.exports = router 
