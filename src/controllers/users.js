@@ -48,7 +48,8 @@ Users.create = async (req, res, next) => {
   password = md5(password)
   
   try {
-    const user = await model.create({ name, email, admin, password, token })
+    const created = await model.create({ name, email, admin, password })
+    const user = await getUserById(created.id)
     res.status(201).json(user)
   } catch(e) {
     next(e)
@@ -151,6 +152,7 @@ Users.changePass = async (req, res, next) => {
 }
 
 Users.resetPass = async (req, res, next) => {
+  // pega req.query.token, valida e troca a senha
   return res.status(200).json({ msg: 'reset' })
 }
 
@@ -168,6 +170,8 @@ Users.forgottenPass = async (req, res, next) => {
   if (!user) {
     return res.status(400).json({ error: 'The email is not registered' })
   }
+
+  // registrar o reset, criar um token e mandar o e-mail com o link
 
   return res.status(200).json({ msg: `The reset link was sent to '${email}'` })
 }
