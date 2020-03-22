@@ -3,9 +3,7 @@ const User = require('../models/users')
 
 module.exports = {
   async validate(req, res, next) {
-    // Para a rota de registro de log a validação do JWT é ignorada
-    const url = getUrl(req)
-    if ((url === '/v1/logs') && (req.method === 'POST')) {
+    if (skipJwtValidation(req)) {
       next()
       return
     }
@@ -27,12 +25,51 @@ module.exports = {
   },
 
   async isAdmin(req, res, next) {
-    if (!req.user.admin) {
+    const skip = skipAdminValidation(req)
+    if (!skip && !req.user.admin) {
       return res.status(403).json({ error: `You don't have access to this feature` })
     }
 
     next()
   }
+}
+
+const ignoreJwt = [
+  '/v1/logs',
+  '/v1/users/register',
+  '/v1/users/forgotten-pass',
+  '/v1/users/reset-pass',
+]
+
+function skipJwtValidation(req) {
+  const url = getUrl(req)
+  return ignoreJwt.includes(url) && (req.method === 'POST')
+}
+
+const ignoreAdmin = [
+  '/v1/users/register',
+  '/v1/users/forgotten-pass',
+  '/v1/users/reset-pass',
+  '/v1/users/<param>/change-pass',
+]
+
+function skipAdminValidation(req) {
+  const url = getUrl(req)
+  const urlChunks = url.split('/')
+  
+  const routeList = ignoreAdmin.map(item => {
+    const itemChuncks = item.split('/')
+
+    for (let i = 0; i < itemChuncks.length; i++) {
+      if (itemChuncks[i] === '<param>') {
+        itemChuncks[i] = urlChunks[i]
+      }
+    }
+
+    return itemChuncks.join('/')
+  })
+  
+  return routeList.includes(url) && (req.method === 'POST')
 }
 
 function getUrl(req) {
