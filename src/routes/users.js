@@ -8,15 +8,17 @@ router.get('/:userId', controller.getById)
 
 router.post('/', controller.create)
 
-//router.post('/login', authentication.findOne)
-
 router.patch('/:userId', controller.update)
 
-//router.patch('/:userId/changePass', controller.update)
-
-//router.patch('/:userId/forgottenPass', controller.update)
-
 router.delete('/:userId', controller.delete)
+
+router.post('/:userId/change-pass', controller.changePass)
+
+router.post('/register', controller.register)
+
+router.post('/reset-pass', controller.resetPass)
+
+router.post('/forgotten-pass', controller.forgottenPass)
 
 router.use((err, req, res, next) => {
     let error = (err.parent || {}).sqlMessage
