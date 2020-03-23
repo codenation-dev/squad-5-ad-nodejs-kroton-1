@@ -1,7 +1,6 @@
 const model = require('../models/users')
 const md5 = require('md5')
-const { Op } = require('sequelize')
-const jwt = require('jsonwebtoken')
+const PasswordReset = require('../libs/passwordReset')
 
 let Users = {}
 
@@ -152,7 +151,37 @@ Users.changePass = async (req, res, next) => {
 }
 
 Users.resetPass = async (req, res, next) => {
-  // pega req.query.token, valida e troca a senha
+  const { token = '', password = '' } = req.body
+
+  if (token === '') {
+    return res.status(400).json({ error: 'The token field cannot be empty'})
+  }
+
+  const userId = await PasswordReset.getUser(token)
+
+  if (!userId) {
+    return res.status(400).json({ error: 'Invalid token'})
+  }
+
+  if (password === '') {
+    return res.status(400).json({ error: 'The password field cannot be empty'})
+  }
+  
+  if (password.length < 8) {
+    return res.status(400).json({ error: 'The password field must be at least 8 characters' })
+  }
+
+  const user = await getUserById(userId)
+  user.password = md5(password)
+  
+  try {
+    await user.save()
+    await PasswordReset.setCompleted(token)
+    return res.status(204).end()
+  } catch(e) {
+    next(e)
+  } 
+
   return res.status(200).json({ msg: 'reset' })
 }
 
@@ -171,9 +200,12 @@ Users.forgottenPass = async (req, res, next) => {
     return res.status(400).json({ error: 'The email is not registered' })
   }
 
-  // registrar o reset, criar um token e mandar o e-mail com o link
-
-  return res.status(200).json({ msg: `The reset link was sent to '${email}'` })
+  try {
+    const reset = await PasswordReset.register(user)
+    return res.status(200).json({ msg: `The reset link was sent to '${email}'` })
+  } catch (e) {
+    return res.status(500).json({ error: 'There was an error sending the email' })
+  }
 }
 
 const getUserById = async id => {
