@@ -8,4 +8,4 @@ const populateTable = async (model, obj) => {
   return response
 }
 
-module.exports = populateTable
+module.exports = {populateTable}

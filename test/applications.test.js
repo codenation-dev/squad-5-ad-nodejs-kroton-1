@@ -6,7 +6,7 @@ const userModel= require('../src/models/users')
 const logsModel = require('../src/models/logs')
 const applicationsModel = require('../src/models/applications')
 
-const { populateTable, cleanTable } = require('./utils')
+const { populateTable } = require('./utils')
 const request = require('supertest')
 const { app } = require('../src/app.js')
 
@@ -74,7 +74,7 @@ describe('The API on /v1/applications Endpoint at GET method should...', () => {
   beforeEach(async () => {
     populateTable(applicationsModel, {
       name:'Central de erros teste',
-      description:'Apia para armazenar e vizualizar erros',
+      description:'Api para armazenar e vizualizar erros',
       token:applicationToken,
       userId:1
     })
@@ -106,10 +106,14 @@ describe('The API on /v1/applications Endpoint at GET method should...', () => {
       total:1,
       data:[
         {
+          id:1,
           name:'Central de erros teste',
-          description:'Apia para armazenar e vizualizar erros',
+          description:'Api para armazenar e vizualizar erros',
           token:applicationToken,
-          userId:1
+          user: {
+            id:1,
+            name:'Rogerio Miguel'
+          }
         }
       ]
     })
@@ -132,7 +136,7 @@ describe('The API on /v1/applications/id Endpoint at GET method should...', () =
   beforeEach(async () => {
       populateTable(applicationsModel, {
         name:'Central de erros teste',
-        description:'Apia para armazenar e vizualizar erros',
+        description:'Api para armazenar e vizualizar erros',
         token:applicationToken,
         userId:1
       })
@@ -153,7 +157,7 @@ describe('The API on /v1/applications/id Endpoint at GET method should...', () =
       'token',
       'createdAt',
       'updatedAt',
-      'userId'
+      'user'
     ])
   })
 
@@ -166,10 +170,14 @@ describe('The API on /v1/applications/id Endpoint at GET method should...', () =
 
     expect(res.statusCode).toEqual(200)
     expect(res.body).toMatchObject({
+      id:1,
       name:'Central de erros teste',
-      description:'Apia para armazenar e vizualizar erros',
+      description:'Api para armazenar e vizualizar erros',
       token:applicationToken,
-      userId:1
+      user: {
+        id:1,
+        name:'Rogerio Miguel'
+      }
     })
   })
 
@@ -219,7 +227,7 @@ describe('The API on /v1/applications Endpoint at POST method should...', () => 
     const res = await request(app).post('/v1/applications')
     .send({
       name:'Central de erros teste',
-      description:'Apia para armazenar e vizualizar erros'
+      description:'Api para armazenar e vizualizar erros'
     })
     .set({
       Authorization:token
@@ -232,9 +240,9 @@ describe('The API on /v1/applications Endpoint at POST method should...', () => 
       'name',
       'description',
       'token',
-      'userId',
+      'createdAt',
       'updatedAt',
-      'createdAt'
+      'user',
     ])
   })
   
@@ -253,11 +261,14 @@ describe('The API on /v1/applications Endpoint at POST method should...', () => 
     expect(res.statusCode).toEqual(201)
 
     expect(res.body).toMatchObject({
-      id: 1,
-      name: "Central de erros teste",
-      description: "Api para armazenar e vizualizar erros",
-      userId: 1,
-  })
+      id:1,
+      name:'Central de erros teste',
+      description:'Api para armazenar e vizualizar erros',
+      user: {
+        id:1,
+        name:'Rogerio Miguel'
+      }
+    })
   })
 
   test(`return 401 as status code and the 'Authentication failure' error`, async () => {
@@ -288,7 +299,7 @@ describe('The API on /v1/applications/id Endpoint at PATCH method should...', ()
     const res = await request(app).patch('/v1/applications/1')
     .send({
       name:'Central de erros teste',
-      description:'Apia para armazenar e vizualizar erros'
+      description:'Api para armazenar e vizualizar erros'
     })
     .set({
       Authorization:token
@@ -303,7 +314,7 @@ describe('The API on /v1/applications/id Endpoint at PATCH method should...', ()
       'token',
       'createdAt',
       'updatedAt',
-      'userId'
+      'user'
     ])
   })
 
@@ -313,7 +324,7 @@ describe('The API on /v1/applications/id Endpoint at PATCH method should...', ()
     const res = await request(app).patch('/v1/applications/1')
     .send({
       name:'Central de erros',
-      description:'Apia para armazenar erros'
+      description:'Api para armazenar erros'
     })
     .set({
       Authorization:token
@@ -324,8 +335,12 @@ describe('The API on /v1/applications/id Endpoint at PATCH method should...', ()
     expect(res.body).toMatchObject({
       id:1,
       name:'Central de erros',
-      description:'Apia para armazenar erros',
-      userId:1
+      description:'Api para armazenar erros',
+      token:applicationToken,
+      user: {
+        id:1,
+        name:'Rogerio Miguel'
+      }
     })
   })
 
