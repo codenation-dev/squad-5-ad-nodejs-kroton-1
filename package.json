@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node src/bin/www",
     "dev": "nodemon src/bin/www",
-    "test": "jest test/users.test.js"
+    "test": "jest test/logs.test.js"
   },
   "repository": {
     "type": "git",
