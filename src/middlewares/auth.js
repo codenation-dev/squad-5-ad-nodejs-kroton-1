@@ -3,7 +3,7 @@ const User = require('../models/users')
 
 module.exports = {
   async validate(req, res, next) {
-    if (skipJwtValidation(req)) {
+    if (await skipJwtValidation(req)) {
       next()
       return
     }
@@ -25,51 +25,13 @@ module.exports = {
   },
 
   async isAdmin(req, res, next) {
-    const skip = skipAdminValidation(req)
+    const skip = await skipAdminValidation(req)
     if (!skip && !req.user.admin) {
       return res.status(403).json({ error: `You don't have access to this feature` })
     }
 
     next()
   }
-}
-
-const ignoreJwt = [
-  '/v1/logs',
-  '/v1/users/register',
-  '/v1/users/forgotten-pass',
-  '/v1/users/reset-pass',
-]
-
-function skipJwtValidation(req) {
-  const url = getUrl(req)
-  return ignoreJwt.includes(url) && (req.method === 'POST')
-}
-
-const ignoreAdmin = [
-  '/v1/users/register',
-  '/v1/users/forgotten-pass',
-  '/v1/users/reset-pass',
-  '/v1/users/<param>/change-pass',
-]
-
-function skipAdminValidation(req) {
-  const url = getUrl(req)
-  const urlChunks = url.split('/')
-  
-  const routeList = ignoreAdmin.map(item => {
-    const itemChuncks = item.split('/')
-
-    for (let i = 0; i < itemChuncks.length; i++) {
-      if (itemChuncks[i] === '<param>') {
-        itemChuncks[i] = urlChunks[i]
-      }
-    }
-
-    return itemChuncks.join('/')
-  })
-  
-  return routeList.includes(url) && (req.method === 'POST')
 }
 
 function getUrl(req) {
@@ -81,4 +43,96 @@ function getUrl(req) {
   }
 
   return url
+}
+
+async function fillParams(routeList, url) {
+  url = url.split('/')
+  const output = []
+  routeList.map(route => {
+    const chuncks = route.url.split('/')
+
+    for (let i = 0; i < chuncks.length; i++) {
+      if (chuncks[i] === '<param>') {
+        chuncks[i] = url[i]
+      }
+    }
+
+    output.push({
+      url: chuncks.join('/'),
+      methods: route.methods,
+    })
+
+    return route
+  })
+  
+  return output
+}
+
+async function findRoute(routeList, url, method) {
+  let found = false
+
+  const routes = await fillParams(routeList, url)
+  
+  routes.forEach(route => {
+    if (!found) {
+      const urlOk = route.url === url
+      const methodOk = route.methods.includes(method)
+
+      found = urlOk && methodOk      
+    }
+  })
+
+  return found
+}
+
+const ignoreJwt = [
+  {
+    url: '/v1/logs',
+    methods: ['POST'],
+  },
+  {
+    url: '/v1/users/register',
+    methods: ['POST'],
+  },
+  {
+    url: '/v1/users/forgotten-pass',
+    methods: ['POST'],
+  },
+  {
+    url: '/v1/users/reset-pass',
+    methods: ['POST'],
+  },
+]
+
+async function skipJwtValidation(req) {
+  const url = getUrl(req)
+  return await findRoute(ignoreJwt, url, req.method)
+}
+
+const ignoreAdmin = [
+  { 
+    url: '/v1/users/register', 
+    methods: ['POST'], 
+  },
+  { 
+    url: '/v1/users/forgotten-pass', 
+    methods: ['POST'], 
+  },
+  { 
+    url: '/v1/users/reset-pass', 
+    methods: ['POST'],
+  },
+  { 
+    url: '/v1/users/<param>/change-pass', 
+    methods: ['POST'], 
+  },
+  { 
+    url: '/v1/users/<param>', 
+    methods: ['GET', 'PATCH', 'DELETE'], 
+  },
+]
+
+async function skipAdminValidation(req) {
+  const url = getUrl(req)
+  return await findRoute(ignoreAdmin, url, req.method)
 }
