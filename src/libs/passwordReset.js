@@ -24,7 +24,7 @@ PasswordReset.register = async user => {
 PasswordReset.getUser = async token => {
     let userId = null
     
-    const reset = await passwordResetModel.findOne({ token })
+    const reset = await passwordResetModel.findOne({ where: { token } })
     if (reset && !reset.completed) {
         userId = reset.userId
     }
@@ -33,7 +33,7 @@ PasswordReset.getUser = async token => {
 }
 
 PasswordReset.setCompleted = async token => {
-    const reset = await passwordResetModel.findOne({ token })
+    const reset = await passwordResetModel.findOne({ where: { token } })
     reset.completed = true
     reset.save()
 }
