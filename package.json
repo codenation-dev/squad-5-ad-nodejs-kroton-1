@@ -4,6 +4,7 @@
   "description": "## Objetivo",
   "main": "index.js",
   "scripts": {
+    "start": "node src/bin/www",
     "dev": "nodemon src/bin/www",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
