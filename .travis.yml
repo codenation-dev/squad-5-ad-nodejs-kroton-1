@@ -1,0 +1,8 @@
+deploy:
+  provider: heroku
+  api_key:
+    secure: pXmz5vpP/m6bSDsOoGgd9jxwPv0pZQnGO7ednoYiPUTCi/BZOzlpL73VB2JOFyQKJETp/bgxZ/vFC7/1drqdLDx/ZDUoWtcY/0/EoGZtcb29kB7QfCLat8Xs4CRpKrfFYet0anuH7FeDogjQeR8ARUWFNsIXe6VGNjprLEnYCrw5xuh/KxsWfs0qygsgvVnfsm2P8cjoJ72K5WNKM8VNJ3lUZ2/ILf45uM+E5L5UWQ+6jUB2rvZRZAc0kG/mK5Cbfnp0OMwf8C3HkXBZnWX/VLeS3BXyX19Mr4qEi2R41k809OBOj0EPg6a1NEKP6QzyV+3Jpk4Lhg1T2qvegEPkgs3eC2QFIGzEuYVNxNW3392ufXmgr57XcI1SBnrwcshi3YAR+z6wrfUzP0bmlvvykCcBrzeBwFh7EdFfb3cft3UPYfP7f6Ce8pU1IXj78Tf3qKBSllqWOV8IoZt3fMqgM8ceIwTBhKK7gyEuQgd8e0iZrBrHa+bdeN+SFxrO4sqIfJZEibhZFSTuKEFulSGTUocu2fJDC4I8Cm1i5ph1rN8x3S5iSWUnwuxFJexARGrvK9swFMXiCEoZ+4zWkT2ETJfe99OQ7NMUdX+vbPZ9YFr+d9EiYRWm/Gb75fnhSvsANJS9rTNNiCLCq4XfBfGj0VMvy3NMrXP896VdNcwgOF4=
+  app: sentinellogapi
+  on:
+    repo: codenation-dev/squad-5-ad-nodejs-kroton-1
+    branch: Heroku
