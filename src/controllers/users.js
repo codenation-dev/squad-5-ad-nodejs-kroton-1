@@ -21,7 +21,12 @@ Users.getAll = async (req, res, next) => {
 
 Users.getById = async (req, res, next) => {
   try {
-    const id = req.params.userId
+    const id = parseInt(req.params.userId)
+
+    if ((!req.user.admin) && (req.user.id !== id)) {
+      return res.status(403).json({ error: `You don't have access to this feature` })
+    }    
+
     const user = await getUserById(id)
     if (user) {
       res.status(200).json(user)
@@ -56,14 +61,14 @@ Users.create = async (req, res, next) => {
 }
 
 Users.update = async (req, res, next) => {
-  const id = req.params.userId
+  const id = parseInt(req.params.userId)
   const user = await getUserById(id)
 
-  if (user) {
-    if ((!req.user.admin) && (user.id !== req.user.id)) {
-      return res.status(403).json({ error: `You don't have access to this feature` })
-    }
+  if ((!req.user.admin) && (req.user.id !== id)) {
+    return res.status(403).json({ error: `You don't have access to this feature` })
+  }
 
+  if (user) {
     const { password } = req.body
 
     if (password !== undefined) {
@@ -93,14 +98,14 @@ Users.update = async (req, res, next) => {
 }
 
 Users.delete = async (req, res, next) => {
-  const id = req.params.userId
+  const id = parseInt(req.params.userId)
   const user = await getUserById(id)
 
-  if (user) {
-    if ((!req.user.admin) && (user.id !== req.user.id)) {
-      return res.status(403).json({ error: `You don't have access to this feature` })
-    }
+  if ((!req.user.admin) && (req.user.id !== id)) {
+    return res.status(403).json({ error: `You don't have access to this feature` })
+  }  
 
+  if (user) {
     try {
       await user.destroy()
       res.status(204).end()
