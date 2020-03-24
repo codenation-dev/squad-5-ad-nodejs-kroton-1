@@ -1,13 +1,11 @@
 #!/usr/bin/env node
 
-const db = require('../models/')
+createAdmin()
 
-db.sequelize.sync().then(async () => {
-  await createAdmin(db.users)
-  process.exit(0)
-})
+async function createAdmin() {
+  const db = require('../models')
+  const model = db.models.users
 
-async function createAdmin(model) {
   const md5 = require('md5')
   const crypto = require('crypto')
   
@@ -42,4 +40,5 @@ async function createAdmin(model) {
       console.log('Error ao atualizar Admin', e)
     }
   }
-}  
+  db.close()
+}
