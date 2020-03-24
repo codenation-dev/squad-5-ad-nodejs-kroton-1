@@ -16,6 +16,7 @@ Applications.getAll = async (req, res, next) =>{
             attributes: ['id', 'name', 'description', 'token', 'createdAt', 'updatedAt'],
             include: [{
                 model: userModel,
+                as: 'user',
                 attributes: ['id', 'name'],
             }]            
         })
@@ -35,7 +36,7 @@ Applications.getById = async (req, res, next) =>{
     const data = await getApplicationById(id)
 
     if (data) {
-      if ((!req.user.admin) && (data.userId !== req.user.id)) {
+      if ((!req.user.admin) && (data.user.id !== req.user.id)) {
         return res.status(403).json({ error: `You don't have access to this feature` })
       }
 
@@ -75,7 +76,7 @@ Applications.update = async (req, res, next) =>{
 	const application = await getApplicationById(id)
 
 	if (application) {
-    if ((!req.user.admin) && (application.userId !== req.user.id)) {
+    if ((!req.user.admin) && (application.user.id !== req.user.id)) {
       return res.status(403).json({ error: `You don't have access to this feature` })
     } 
 
@@ -100,7 +101,7 @@ Applications.delete = async (req, res, next) =>{
   const application = await getApplicationById(id) 
 
   if (application) {
-    if ((!req.user.admin) && (application.userId !== req.user.id)) {
+    if ((!req.user.admin) && (application.user.id !== req.user.id)) {
       return res.status(403).json({ error: `You don't have access to this feature` })
     }
 
@@ -121,6 +122,7 @@ const getApplicationById = async id =>{
     attributes: ['id', 'name', 'description', 'token', 'createdAt', 'updatedAt'],
     include: [{
       model: userModel,
+      as: 'user',
       attributes: ['id', 'name'],
     }]
   })
