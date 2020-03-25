@@ -14,8 +14,8 @@ router.patch('/:notificationId', controller.update)
 
 router.delete('/:notificationId', controller.delete)
 
-//router.use('/:notificationId/triggers', triggers)
-//router.use('/:notificationId/alerts', alerts)
+router.use('/:notificationId/triggers', controller.validateParams, controller.redirectParams, triggers)
+router.use('/:notificationId/alerts', controller.validateParams, controller.redirectParams, alerts)
 
 router.use((err, req, res, next) => {
     let error = (err.parent || {}).sqlMessage
