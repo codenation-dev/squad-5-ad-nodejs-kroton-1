@@ -42,7 +42,12 @@ Logs.getById = async (req, res, next) => {
       attributes: ['id', 'title', 'detail', 'level', 'events', 'environment', 'source_address', 'archived', 'createdAt', 'updatedAt', 'deletedAt'],
       include: [{
         association: 'application',
-        attributes: ['id', 'name',  'description', 'userId']
+        attributes: ['id', 'name',  'description', 'userId'],
+        include:{
+          association: 'user',
+          attributes: ['id', 'name'],
+          where: { deletedAt: null }
+        }        
       }]      
     })
   
@@ -64,8 +69,25 @@ Logs.create = async (req, res, next) => {
   if (req.body.source_address === undefined) {
     req.body.source_address = req.ip
   }
-  const result = await logsModel.create(req.body)  
-  res.status(201).json({ result })
+  const created = await logsModel.create(req.body)
+
+  const result = await logsModel.findOne({
+    where: { 
+      id: created.id 
+    },
+    attributes: ['id', 'title', 'detail', 'level', 'events', 'environment', 'source_address', 'archived', 'createdAt', 'updatedAt', 'deletedAt'],
+    include: [{
+      association: 'application',
+      attributes: ['id', 'name',  'description', 'userId'],
+      include:{
+        association: 'user',
+        attributes: ['id', 'name'],
+        where: { deletedAt: null }
+      }        
+    }]      
+  })
+
+  res.status(201).json(result)
 }
 
 Logs.delete = async (req, res, next) => {

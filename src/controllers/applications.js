@@ -1,18 +1,25 @@
 const model = require('../models/applications')
+const userModel = require('../models/users')
 const crypto = require('crypto')
 
 let Applications = {}
 
 Applications.getAll = async (req, res, next) =>{
-  req.where = {}
-  if (!req.user.admin) {
-    req.where.userId = req.user.id
-  }
+    req.where = {}
+    if (!req.user.admin) {
+      req.where.userId = req.user.id
+    }
   
-  try {
-    let data = await model.findAll({
-      where:req.where
-    })
+    try {
+        let data = await model.findAll({
+            where:req.where,
+            attributes: ['id', 'name', 'description', 'token', 'createdAt', 'updatedAt'],
+            include: [{
+                model: userModel,
+                as: 'user',
+                attributes: ['id', 'name'],
+            }]            
+        })
 
 		res.status(200).json({
 			total:data.length,
@@ -29,7 +36,7 @@ Applications.getById = async (req, res, next) =>{
     const data = await getApplicationById(id)
 
     if (data) {
-      if ((!req.user.admin) && (data.userId !== req.user.id)) {
+      if ((!req.user.admin) && (data.user.id !== req.user.id)) {
         return res.status(403).json({ error: `You don't have access to this feature` })
       }
 
@@ -55,9 +62,10 @@ Applications.create = async (req, res, next) =>{
     
 		const token = crypto.randomBytes(20).toString('hex')
     
-		const result = await model.create({ name, description, token, userId })
+    const created = await model.create({ name, description, token, userId })
+    const application = await getApplicationById(created.id)
 
-		res.status(201).json(result)
+		res.status(201).json(application)
 	} catch(e) {
 		next(e)
 	}
@@ -68,7 +76,7 @@ Applications.update = async (req, res, next) =>{
 	const application = await getApplicationById(id)
 
 	if (application) {
-    if ((!req.user.admin) && (application.userId !== req.user.id)) {
+    if ((!req.user.admin) && (application.user.id !== req.user.id)) {
       return res.status(403).json({ error: `You don't have access to this feature` })
     } 
 
@@ -93,7 +101,7 @@ Applications.delete = async (req, res, next) =>{
   const application = await getApplicationById(id) 
 
   if (application) {
-    if ((!req.user.admin) && (application.userId !== req.user.id)) {
+    if ((!req.user.admin) && (application.user.id !== req.user.id)) {
       return res.status(403).json({ error: `You don't have access to this feature` })
     }
 
@@ -111,7 +119,12 @@ Applications.delete = async (req, res, next) =>{
 const getApplicationById = async id =>{
   const application = await model.findOne({
     where: { id },
-    attributes: ['id', 'name', 'description', 'token', 'createdAt', 'updatedAt', 'userId']
+    attributes: ['id', 'name', 'description', 'token', 'createdAt', 'updatedAt'],
+    include: [{
+      model: userModel,
+      as: 'user',
+      attributes: ['id', 'name'],
+    }]
   })
 
   return application

@@ -31,7 +31,8 @@ class users extends Model {
     }
 
     static associate(models) {
-        this.hasMany(models.applications, {foreignKey:'userId', as:'applications'})
+        this.hasMany(models.applications, { foreignKey: 'userId', as: 'applications' })
+        this.hasMany(models.passwordReset, { foreignKey: 'userId', as:'passwordResets' })
     }
 }
 
