@@ -1,4 +1,3 @@
-const userModel = require('../src/models/users')
 const md5 = require('md5')
 
 const populateTable = async (model, obj) => {
@@ -9,13 +8,4 @@ const populateTable = async (model, obj) => {
   return response
 }
 
-const cleanTable = async (table) => {
-  const response = await userModel.truncate()
-
-  return response
-}
-
-module.exports = {
-  populateTable,
-  cleanTable
-}
+module.exports = {populateTable}
