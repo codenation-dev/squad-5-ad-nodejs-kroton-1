@@ -25,6 +25,10 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      messagem: {
+        type: Sequelize.TEXT,
+        allowNull: false,
+      },
       createdAt:{
         type:Sequelize.DATE,
         allowNull:false
