@@ -3,7 +3,7 @@ const table = `sentinel_log_${NODE_ENV}`
 const sequelize = require('../src/models/index')
 const userModel = require('../src/models/users')
 
-const { populateTable, cleanTable } = require('./utils')
+const { populateTable } = require('./utils')
 const request = require('supertest')
 const { app } = require('../src/app.js')
 

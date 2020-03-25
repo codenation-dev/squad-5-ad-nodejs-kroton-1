@@ -6,7 +6,7 @@ const userModel = require('../src/models/users')
 const logsModel = require('../src/models/logs')
 const applicationsModel = require('../src/models/applications')
 
-const { populateTable, cleanTable } = require('./utils')
+const { populateTable } = require('./utils')
 const request = require('supertest')
 const { app } = require('../src/app.js')
 
