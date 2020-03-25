@@ -13,16 +13,7 @@ router.patch('/:appId', controller.update)
 
 router.delete('/:appId', controller.delete)
 
-const redirectAppId = (req, res, next) => {
-  const parentParams = req.parentParams || {}
-
-  parentParams.appId = parseInt(req.params.appId)
-
-  req.parentParams = parentParams
-  next() 
-}
-
-router.use('/:appId/notifications', redirectAppId, notifications)
+router.use('/:appId/notifications', controller.validateParams, controller.redirectParams, notifications)
 
 router.use((err, req, res, next) => {
     let error = (err.parent || {}).sqlMessage
