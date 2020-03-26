@@ -5,6 +5,8 @@ const login = require('./login')
 const users = require('./users')
 const logs = require('./logs')
 const applications = require('./applications')
+const swaggerUi = require('swagger-ui-express')
+const swaggerDocument = require('../../swagger.json')
 
 router.get('/', (req, res) => {
   const protocol = req.protocol
@@ -21,5 +23,6 @@ router.use('/login', login)
 router.use('/users', auth.validate, auth.isAdmin, users)
 router.use('/logs', auth.validate, logs)
 router.use('/applications', auth.validate, applications)
+router.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 module.exports = router 

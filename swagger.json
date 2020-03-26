@@ -1,0 +1,649 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "This is a sample logs api.",
+    "version": "1.0.0",
+    "title": "Sentinel Logs",
+    "contact": {
+      "email": "sentinellog23@gmail.com"
+    }
+  },
+  "host": "localhost",
+  "basePath": "/v1",
+  "tags": [
+    {
+      "name": "users"
+    },
+    {
+      "name": "applications"
+    },
+    {
+      "name": "logs"
+    }
+  ],
+  "schemes": [
+    "https",
+    "http"
+  ],
+  "paths": {
+    "/users": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "See all users",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "All users"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Register a new user",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "User details",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Users"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "schema": {
+              "$ref": "#/definitions/ResponseUsers"
+            },
+            "description": "The registered user"
+          }
+        }
+      }
+    },
+    "/users/{userId}": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Find a user by id",
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/ResponseUsers"
+            },
+            "description": "One user by id"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Update a user",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "User details",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "$ref": "#/definitions/patchUser"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/ResponseUsers"
+            },
+            "description": "The updated user"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Delete a user by id",
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/users/{userId}/change-pass": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Update a user password",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Password",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "$ref": "#/definitions/changePass"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/users/{userId}/forgotten-pass": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Get a token to reset a user password",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "$ref": "#/definitions/forgotPass"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Confirm the email sent"
+          }
+        }
+      }
+    },
+    "/users/{userId}/reset-pass": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Reset a user password",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "$ref": "#/definitions/resetPass"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/applications": {
+      "get": {
+        "tags": [
+          "applications"
+        ],
+        "summary": "See all your applications",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "All your applications"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "applications"
+        ],
+        "summary": "Register a new application",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Applications details",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Applications"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "schema": {
+              "$ref": "#/definitions/ResponseApplications"
+            },
+            "description": "The registered applications"
+          }
+        }
+      }
+    },
+    "/applications/{applicationId}": {
+      "get": {
+        "tags": [
+          "applications"
+        ],
+        "summary": "Find a appplication by id",
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/ResponseApplications"
+            },
+            "description": "One application by id"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "applications"
+        ],
+        "summary": "Update a application",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Applications details",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Applications"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/ResponseApplications"
+            },
+            "description": "The updated applications"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "applications"
+        ],
+        "summary": "Delete a application by id",
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/logs": {
+      "get": {
+        "tags": [
+          "logs"
+        ],
+        "summary": "See all your logs",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "All your logs from all applications"
+          }
+        }
+      }
+    },
+    "/logs?token={applicationToken}": {
+      "post": {
+        "tags": [
+          "logs"
+        ],
+        "summary": "Register a new log to your application",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Logs details",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Logs"
+            }
+          },
+          {
+            "in": "query",
+            "type": "string",
+            "name": "token",
+            "description": "Send the application token in the url by /logs?token=token",
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "schema": {
+              "$ref": "#/definitions/ResponseLogs"
+            },
+            "description": "The registered log"
+          }
+        }
+      }
+    },
+    "/logs/{logId}/archive": {
+      "patch": {
+        "tags": [
+          "logs"
+        ],
+        "summary": "Archive a log by id",
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/logs/{logId}": {
+      "get": {
+        "tags": [
+          "logs"
+        ],
+        "summary": "Find a log by id",
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/ResponseLogs"
+            },
+            "description": "One log by id"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "logs"
+        ],
+        "summary": "Delete a log by id",
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Logs": {
+      "type": "object",
+      "required": [
+        "title",
+        "detail",
+        "level",
+        "events",
+        "environment"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "detail": {
+          "type": "string"
+        },
+        "level": {
+          "type": "string",
+          "enum": [
+            "error",
+            "warning",
+            "debug"
+          ]
+        },
+        "events": {
+          "type": "integer"
+        },
+        "environment": {
+          "type": "string",
+          "enum": [
+            "prod",
+            "homolog",
+            "dev"
+          ]
+        }
+      }
+    },
+    "Users": {
+      "type": "object",
+      "required": [
+        "name",
+        "email",
+        "password"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "Applications": {
+      "type": "object",
+      "required": [
+        "name",
+        "description"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "ResponseLogs": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "title": {
+          "type": "string"
+        },
+        "detail": {
+          "type": "string"
+        },
+        "level": {
+          "type": "string",
+          "enum": [
+            "error",
+            "warning",
+            "debug"
+          ]
+        },
+        "events": {
+          "type": "integer"
+        },
+        "environment": {
+          "type": "string",
+          "enum": [
+            "prod",
+            "homolog",
+            "dev"
+          ]
+        },
+        "source_address": {
+          "type": "string"
+        },
+        "archived": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string"
+        },
+        "application": {
+          "type": "object"
+        }
+      }
+    },
+    "ResponseApplications": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "token": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string"
+        },
+        "user": {
+          "type": "object"
+        }
+      }
+    },
+    "ResponseUsers": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "admin": {
+          "type": "boolean",
+          "default": false
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string"
+        }
+      }
+    },
+    "patchUser": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        }
+      }
+    },
+    "changePass": {
+      "type": "object",
+      "required": [
+        "password"
+      ],
+      "properties": {
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "forgotPass": {
+      "type": "object",
+      "required": [
+        "email"
+      ],
+      "properties": {
+        "email": {
+          "type": "string"
+        }
+      }
+    },
+    "resetPass": {
+      "type": "object",
+      "required": [
+        "token",
+        "password"
+      ],
+      "properties": {
+        "token": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
