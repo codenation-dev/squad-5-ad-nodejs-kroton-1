@@ -208,8 +208,7 @@ Users.forgottenPass = async (req, res, next) => {
   try {
     const resetToken = await PasswordReset.register(user)
     return res.status(200).json({ 
-      msg: `The reset link was sent to '${email}'`,
-      token: resetToken, 
+      msg: `The reset link was sent to '${email}'`
     })
   } catch (e) {
     return res.status(500).json({ error: 'There was an error sending the email' })
