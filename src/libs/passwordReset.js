@@ -19,6 +19,8 @@ PasswordReset.register = async user => {
     const reset = await passwordResetModel.create({ userId, token })    
 
     await sendMail(user.email, reset.token)
+
+    return token
 }
 
 PasswordReset.getUser = async token => {
