@@ -9,22 +9,7 @@ let Notifications = {}
 Notifications.getAll = async (req, res, next) =>{
   const applicationId = req.parentParams.appId
   try {
-    let data = await model.findAll({
-      where: { applicationId },
-      attributes: ['id', 'name', 'detail', 'createdAt', 'updatedAt'],
-      include: [
-        {
-          model: triggerModel,
-          as: 'triggers',
-          attributes: ['id', 'field', 'condition', 'value'],
-        },
-        {
-          model: alertModel,
-          as: 'alerts',
-          attributes: ['id', 'type', 'to', 'message'],
-        },
-      ]
-    })
+    const data = await Notifications.getAllNotifications(applicationId)
 
 		res.status(200).json({
 			total:data.length,
@@ -117,6 +102,27 @@ Notifications.delete = async (req, res, next) =>{
   } else {
     res.status(404).json({ error: `The notification id ${id} couldn't be found.` })
   }
+}
+
+Notifications.getAllNotifications = async applicationId => {
+  const notifications = await model.findAll({
+    where: { applicationId },
+    attributes: ['id', 'name', 'detail', 'createdAt', 'updatedAt'],
+    include: [
+      {
+        model: triggerModel,
+        as: 'triggers',
+        attributes: ['id', 'field', 'condition', 'value'],
+      },
+      {
+        model: alertModel,
+        as: 'alerts',
+        attributes: ['id', 'type', 'to', 'message'],
+      },
+    ]
+  })
+
+  return notifications
 }
 
 Notifications.getNotificationById = async id => {
