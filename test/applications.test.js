@@ -440,3 +440,5 @@ describe('The API on /v1/applications/id Endpoint at DELETE method should...', (
     })
   })
 })
+
+
