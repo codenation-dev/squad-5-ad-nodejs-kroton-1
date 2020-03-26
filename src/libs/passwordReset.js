@@ -40,4 +40,16 @@ PasswordReset.setCompleted = async token => {
     reset.save()
 }
 
+PasswordReset.getTokenByEmail(email) {
+    const reset = await passwordResetModel.findOne({ 
+        where: { email },
+        order: [
+            ['createdAt', 'DESC'],
+            ['completed', 'ASC'],
+        ], 
+    })
+    reset.completed = true
+    reset.save()    
+}
+
 module.exports = PasswordReset
