@@ -12,6 +12,7 @@ const {
     populateTable,
     getUserDataKeys,
     clearUserData,
+    cloneObject,
  } = require('./utils')
 
 beforeAll(BeforeAll)
@@ -43,20 +44,8 @@ const Notifications = {
     },
     notification2: {
         new: {
-            name: 'Notificação 2 do App 1',
-            detail: 'Notificação 2 do App 1',
-        },
-    },
-    notification3: {
-        new: {
             name: 'Notificação 1 do App 2',
             detail: 'Notificação 1 do App 2',
-        },
-    },
-    notification4: {
-        new: {
-            name: 'Notificação 2 do App 2',
-            detail: 'Notificação 2 do App 2',
         },
     },
 }
@@ -102,11 +91,10 @@ const createNotification = async (notification, appId) => {
 
 const createNotifications = async () => {
     Notifications.notification1 = await createNotification(Notifications.notification1.new, Apps.app1.data.id)
-    Notifications.notification2 = await createNotification(Notifications.notification2.new, Apps.app1.data.id)
-    Notifications.notification3 = await createNotification(Notifications.notification3.new, Apps.app2.data.id)
-    Notifications.notification4 = await createNotification(Notifications.notification4.new, Apps.app2.data.id)
+    Notifications.notification2 = await createNotification(Notifications.notification2.new, Apps.app2.data.id)
 }
 
+// Get All
 describe('The API on /v1/applications/<appId>/notifications Endpoint at GET method should...', () => {
   beforeEach(async () => {
     user = await createUser()
@@ -116,6 +104,18 @@ describe('The API on /v1/applications/<appId>/notifications Endpoint at GET meth
 
   afterEach(truncateAllTables)
 
+  test(`without JWT returns 401 as status code and message 'Authentication failure'`, async () => {
+    expect.assertions(2)
+  
+    const res = await request(app).get(`/v1/applications/1/notifications`)
+
+    expect(res.statusCode).toEqual(401)
+    expect(res.body).toMatchObject({
+        error: `Authentication failure`
+    })
+  })
+
+  // Admin
   test(`for admin user with invalid appId returns 404 as status code and message 'The application id <appId> couldn't be found.'`, async () => {
     expect.assertions(2)
   
@@ -130,45 +130,6 @@ describe('The API on /v1/applications/<appId>/notifications Endpoint at GET meth
     })
   })
 
-  test(`for admin user on App 1 returns 200 as status code and have 'total' and 'data' as properties`, async () => {
-    expect.assertions(2)
-  
-    const res = await request(app).get(`/v1/applications/${Apps.app1.data.id}/notifications`).set({
-      Authorization: user.admin.jwt
-    })
-
-    expect(res.statusCode).toEqual(200)
-    expect(Object.keys(res.body)).toMatchObject([
-      'total',
-      'data'
-    ])
-  })
-
-  test(`for admin user on App 2 returns 200 as status code and have 'total' and 'data' as properties`, async () => {
-    expect.assertions(2)
-  
-    const res = await request(app).get(`/v1/applications/${Apps.app2.data.id}/notifications`).set({
-      Authorization: user.admin.jwt
-    })
-
-    expect(res.statusCode).toEqual(200)
-    expect(Object.keys(res.body)).toMatchObject([
-      'total',
-      'data'
-    ])
-  })
-
-  test(`for admin user on App1 returns the right number of items and an object with all items`, async () => {
-    expect.assertions(2)
-  
-    const res = await request(app).get(`/v1/applications/${Apps.app1.data.id}/notifications`).set({
-      Authorization: user.admin.jwt
-    })
-
-    expect(res.statusCode).toEqual(200)
-    expect(typeof res.body.data).toBe('object')
-  })
-
   test(`for admin user on App1 returns the 'data' property with all items from DB`, async () => {
     expect.assertions(2)
   
@@ -178,12 +139,28 @@ describe('The API on /v1/applications/<appId>/notifications Endpoint at GET meth
 
     expect(res.statusCode).toEqual(200)
     expect(res.body).toMatchObject({  
-        total: 2,
+        total: 1,
         data:
-          [ Notifications.notification1.data, Notifications.notification2.data ]  
+          [ Notifications.notification1.data ]
       })
   })
 
+  test(`for admin user on App2 returns the 'data' property with all items from DB`, async () => {
+    expect.assertions(2)
+  
+    const res = await request(app).get(`/v1/applications/${Apps.app2.data.id}/notifications`).set({
+      Authorization: user.admin.jwt
+    })
+
+    expect(res.statusCode).toEqual(200)
+    expect(res.body).toMatchObject({  
+        total: 1,
+        data:
+          [ Notifications.notification2.data ]
+      })
+  })
+
+  // common
   test(`for common user with invalid appId returns 404 as status code and message 'The application id <appId> couldn't be found.'`, async () => {
     expect.assertions(2)
   
@@ -211,31 +188,6 @@ describe('The API on /v1/applications/<appId>/notifications Endpoint at GET meth
     })
   })
 
-  test(`for common user on App 2 returns 200 as status code and have 'total' and 'data' as properties`, async () => {
-    expect.assertions(2)
-  
-    const res = await request(app).get(`/v1/applications/${Apps.app2.data.id}/notifications`).set({
-      Authorization: user.common.jwt
-    })
-
-    expect(res.statusCode).toEqual(200)
-    expect(Object.keys(res.body)).toMatchObject([
-      'total',
-      'data'
-    ])
-  })
-
-  test(`for common user on App2 returns the right number of items and an object with all items`, async () => {
-    expect.assertions(2)
-  
-    const res = await request(app).get(`/v1/applications/${Apps.app2.data.id}/notifications`).set({
-      Authorization: user.common.jwt
-    })
-
-    expect(res.statusCode).toEqual(200)
-    expect(typeof res.body.data).toBe('object')
-  })  
-
   test(`for common user on App2 returns the 'data' property with all items from DB`, async () => {
     expect.assertions(2)
   
@@ -245,25 +197,318 @@ describe('The API on /v1/applications/<appId>/notifications Endpoint at GET meth
 
     expect(res.statusCode).toEqual(200)
     expect(res.body).toMatchObject({  
-        total: 2,
+        total: 1,
         data:
-          [ Notifications.notification3.data, Notifications.notification4.data ]  
+          [ Notifications.notification2.data ]
       })
   })  
 })
 
-/*
+// Post
 describe('The API on /v1/applications/<appId>/notifications Endpoint at POST method should...', () => {
     beforeEach(async () => {
-        user = createUser()
+        user = await createUser()
         await createApps()
-
     })
 
     afterEach(truncateAllTables)
 
-    test(`return 200 as status code and have 'total' and 'data' as properties`, async () => {
-        
+    // admin
+    test(`for admin user with invalid appId returns 404 as status code and message 'The application id <appId> couldn't be found.'`, async () => {
+      expect.assertions(2)
+      
+      const id = 999
+      const res = await request(app).post(`/v1/applications/${id}/notifications`).send(Notifications.notification1.new).set({
+        Authorization: user.admin.jwt
+      })
+      
+      expect(res.statusCode).toEqual(404)
+      expect(res.body).toMatchObject({ error: `The application id ${id} couldn't be found.`})
     })
+
+    test(`for admin user on App 1 returns 201 as status code and new record created.'`, async () => {
+      expect.assertions(2)
+
+      const res = await request(app).post(`/v1/applications/${Apps.app1.data.id}/notifications`).send(Notifications.notification1.new).set({
+        Authorization: user.admin.jwt
+      })
+      
+      expect(res.statusCode).toEqual(201)
+      expect(res.body).toMatchObject(Notifications.notification1.data)
+    })
+
+    test(`for admin user on App 2 returns 201 as status code and new record created.'`, async () => {
+      expect.assertions(2)
+
+      const res = await request(app).post(`/v1/applications/${Apps.app2.data.id}/notifications`).send(Notifications.notification2.new).set({
+        Authorization: user.admin.jwt
+      })
+
+      const data = cloneObject(Notifications.notification2.data)
+      data.id = 1      
+      expect(res.statusCode).toEqual(201)
+      expect(res.body).toMatchObject(data)
+    })    
+
+    // common
+    test(`for common user with invalid appId returns 404 as status code and message 'The application id <appId> couldn't be found.'`, async () => {
+      expect.assertions(2)
+      
+      const id = 999
+      const res = await request(app).post(`/v1/applications/${id}/notifications`).send(Notifications.notification2.new).set({
+        Authorization: user.common.jwt
+      })
+      
+      expect(res.statusCode).toEqual(404)
+      expect(res.body).toMatchObject({ error: `The application id ${id} couldn't be found.`})
+    })
+
+    test(`for common user on App 1 returns 403 as status code and message 'You don't have access to this feature'`, async () => {
+      expect.assertions(2)
+
+      const res = await request(app).post(`/v1/applications/${Apps.app1.data.id}/notifications`).send(Notifications.notification1.new).set({
+        Authorization: user.common.jwt
+      })
+      
+      expect(res.statusCode).toEqual(403)
+      expect(res.body).toMatchObject({
+          error: `You don't have access to this feature`
+      })
+    })
+
+    test(`for common user on App 2 returns 201 as status code and new record created.'`, async () => {
+      expect.assertions(2)
+
+      const res = await request(app).post(`/v1/applications/${Apps.app2.data.id}/notifications`).send(Notifications.notification2.new).set({
+        Authorization: user.common.jwt
+      })
+      
+      const data = cloneObject(Notifications.notification2.data)
+      data.id = 1
+      expect(res.statusCode).toEqual(201)      
+      expect(res.body).toMatchObject(data)
+    })    
 })
-*/
+
+// Patch
+describe('The API on /v1/applications/<appId>/notifications/<notificationId> Endpoint at PATCH method should...', () => {
+  beforeEach(async () => {
+      user = await createUser()
+      await createApps()
+      await createNotifications()
+  })
+
+  afterEach(truncateAllTables)
+
+  // admin
+  test(`for admin user with invalid appId returns 404 as status code and message 'The application id <appId> couldn't be found.'`, async () => {
+    expect.assertions(2)
+    
+    const id = 999
+    const res = await request(app).patch(`/v1/applications/${id}/notifications/1`).send({ detail: 'alterado' }).set({
+      Authorization: user.admin.jwt
+    })
+    
+    expect(res.statusCode).toEqual(404)
+    expect(res.body).toMatchObject({ error: `The application id ${id} couldn't be found.`})
+  })
+
+  test(`for admin user with invalid notificationId returns 404 as status code and message 'The notification id <notificationId> couldn't be found.'`, async () => {
+    expect.assertions(2)
+    
+    const id = 999
+    const res = await request(app).patch(`/v1/applications/1/notifications/${id}`).send({ detail: 'alterado' }).set({
+      Authorization: user.admin.jwt
+    })
+    
+    expect(res.statusCode).toEqual(404)
+    expect(res.body).toMatchObject({ error: `The notification id ${id} couldn't be found.`})
+  })
+
+  test(`for admin user on App 1 updating notification 1 returns 200 as status code and updated record.'`, async () => {
+    expect.assertions(2)
+
+    const data = cloneObject(Notifications.notification1.data)
+    data.detail = 'alterado'
+    const res = await request(app).patch(`/v1/applications/${Apps.app1.data.id}/notifications/${data.id}`).send({ detail: data.detail }).set({
+      Authorization: user.admin.jwt
+    })
+    
+    expect(res.statusCode).toEqual(200)
+    expect(res.body).toMatchObject(data)
+  })
+
+  test(`for admin user on App 2 updating notification 1 returns 200 as status code and updated record.'`, async () => {
+    expect.assertions(2)
+
+    const data = cloneObject(Notifications.notification2.data)
+    data.detail = 'alterado'
+    const res = await request(app).patch(`/v1/applications/${Apps.app2.data.id}/notifications/${data.id}`).send({ detail: data.detail }).set({
+      Authorization: user.admin.jwt
+    })
+    
+    expect(res.statusCode).toEqual(200)
+    expect(res.body).toMatchObject(data)
+  })    
+
+  // common
+  test(`for common user with invalid appId returns 404 as status code and message 'The application id <appId> couldn't be found.'`, async () => {
+    expect.assertions(2)
+    
+    const id = 999
+    const res = await request(app).patch(`/v1/applications/${id}/notifications/1`).send({ detail: 'alterado' }).set({
+      Authorization: user.common.jwt
+    })
+    
+    expect(res.statusCode).toEqual(404)
+    expect(res.body).toMatchObject({ error: `The application id ${id} couldn't be found.`})
+  })
+
+  test(`for common user with invalid notificationId returns 404 as status code and message 'The notification id <notificationId> couldn't be found.'`, async () => {
+    expect.assertions(2)
+    
+    const id = 999
+    const res = await request(app).patch(`/v1/applications/2/notifications/${id}`).send({ detail: 'alterado' }).set({
+      Authorization: user.common.jwt
+    })
+    
+    expect(res.statusCode).toEqual(404)
+    expect(res.body).toMatchObject({ error: `The notification id ${id} couldn't be found.`})
+  })
+
+  test(`for common user on App 1 updating notification 1 returns 403 as status code and message 'You don't have access to this feature'`, async () => {
+    expect.assertions(2)
+
+    const data = cloneObject(Notifications.notification1.data)
+    data.detail = 'alterado'
+    const res = await request(app).patch(`/v1/applications/${Apps.app1.data.id}/notifications/${data.id}`).send({ detail: data.detail }).set({
+      Authorization: user.common.jwt
+    })
+    
+    expect(res.statusCode).toEqual(403)
+    expect(res.body).toMatchObject({
+        error: `You don't have access to this feature`
+    })
+  })
+
+  test(`for common user on App 2 updating notification 1 returns 200 as status code and updated record.`, async () => {
+    expect.assertions(2)
+
+    const data = cloneObject(Notifications.notification2.data)
+    data.detail = 'alterado'    
+    const res = await request(app).patch(`/v1/applications/${Apps.app2.data.id}/notifications/${data.id}`).send({ detail: data.detail }).set({
+      Authorization: user.common.jwt
+    })
+    
+    expect(res.statusCode).toEqual(200)
+    expect(res.body).toMatchObject(data)
+  })    
+})
+
+// Delete
+describe('The API on /v1/applications/<appId>/notifications/<notificationId> Endpoint at DELETE method should...', () => {
+  beforeEach(async () => {
+    user = await createUser()
+    await createApps()
+    await createNotifications()
+  })
+
+  afterEach(truncateAllTables)
+
+  // admin
+  test(`for admin user with invalid appId returns 404 as status code and message 'The application id <appId> couldn't be found.'`, async () => {
+    expect.assertions(2)
+    
+    const id = 999
+    const res = await request(app).delete(`/v1/applications/${id}/notifications/1`).set({
+      Authorization: user.admin.jwt
+    })
+    
+    expect(res.statusCode).toEqual(404)
+    expect(res.body).toMatchObject({ error: `The application id ${id} couldn't be found.`})
+  })
+
+  test(`for admin user with invalid notificationId returns 404 as status code and message 'The notification id <notificationId> couldn't be found.'`, async () => {
+    expect.assertions(2)
+    
+    const id = 999
+    const res = await request(app).delete(`/v1/applications/1/notifications/${id}`).set({
+      Authorization: user.admin.jwt
+    })
+    
+    expect(res.statusCode).toEqual(404)
+    expect(res.body).toMatchObject({ error: `The notification id ${id} couldn't be found.`})
+  })
+
+  test(`for admin user on App 1 deleting notification 1 returns 204 as status code.'`, async () => {
+    expect.assertions(1)
+
+    const data = cloneObject(Notifications.notification1.data)
+    const res = await request(app).delete(`/v1/applications/${Apps.app1.data.id}/notifications/${data.id}`).set({
+      Authorization: user.admin.jwt
+    })
+    
+    expect(res.statusCode).toEqual(204)
+  })
+
+  test(`for admin user on App 2 deleting notification 1 returns 204 as status code.'`, async () => {
+    expect.assertions(1)
+
+    const data = cloneObject(Notifications.notification2.data)
+    const res = await request(app).delete(`/v1/applications/${Apps.app2.data.id}/notifications/${data.id}`).set({
+      Authorization: user.admin.jwt
+    })
+    
+    expect(res.statusCode).toEqual(204)
+  })    
+
+  // common
+  test(`for common user with invalid appId returns 404 as status code and message 'The application id <appId> couldn't be found.'`, async () => {
+    expect.assertions(2)
+    
+    const id = 999
+    const res = await request(app).delete(`/v1/applications/${id}/notifications/1`).set({
+      Authorization: user.common.jwt
+    })
+    
+    expect(res.statusCode).toEqual(404)
+    expect(res.body).toMatchObject({ error: `The application id ${id} couldn't be found.`})
+  })
+
+  test(`for common user with invalid notificationId returns 404 as status code and message 'The notification id <notificationId> couldn't be found.'`, async () => {
+    expect.assertions(2)
+    
+    const id = 999
+    const res = await request(app).delete(`/v1/applications/2/notifications/${id}`).set({
+      Authorization: user.common.jwt
+    })
+    
+    expect(res.statusCode).toEqual(404)
+    expect(res.body).toMatchObject({ error: `The notification id ${id} couldn't be found.`})
+  })
+
+  test(`for common user on App 1 deleting notification 1 returns 403 as status code and message 'You don't have access to this feature'`, async () => {
+    expect.assertions(2)
+
+    const data = cloneObject(Notifications.notification1.data)
+    const res = await request(app).delete(`/v1/applications/${Apps.app1.data.id}/notifications/${data.id}`).set({
+      Authorization: user.common.jwt
+    })
+    
+    expect(res.statusCode).toEqual(403)
+    expect(res.body).toMatchObject({
+        error: `You don't have access to this feature`
+    })
+  })
+
+  test(`for common user on App 2 deleting notification 1 returns 204 as status code.`, async () => {
+    expect.assertions(1)
+
+    const data = cloneObject(Notifications.notification2.data)
+    const res = await request(app).delete(`/v1/applications/${Apps.app2.data.id}/notifications/${data.id}`).set({
+      Authorization: user.common.jwt
+    })
+    
+    expect(res.statusCode).toEqual(204)
+  })    
+})
