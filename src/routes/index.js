@@ -22,4 +22,18 @@ router.use('/users', auth.validate, auth.isAdmin, users)
 router.use('/logs', auth.validate, logs)
 router.use('/applications', auth.validate, applications)
 
+router.use((err, req, res, next) => {
+  let error = (err.parent || {}).sqlMessage
+  if (err.errors) {
+    error = ''
+    for (const i in err.errors) {
+      if (error !== '') error += ', '
+      error += err.errors[i].message + ''
+    }
+  } else {
+    error = 'The request is incorrect'
+  }
+  res.status(400).json({ error })    
+})
+
 module.exports = router 

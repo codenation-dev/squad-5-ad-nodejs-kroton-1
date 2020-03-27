@@ -40,7 +40,7 @@ PasswordReset.setCompleted = async token => {
     reset.save()
 }
 
-PasswordReset.getTokenByEmail(email) {
+PasswordReset.getTokenByEmail = async (email) => {
     const reset = await passwordResetModel.findOne({ 
         where: { email },
         order: [
