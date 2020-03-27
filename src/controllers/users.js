@@ -99,22 +99,24 @@ Users.update = async (req, res, next) => {
 
 Users.delete = async (req, res, next) => {
   const id = parseInt(req.params.userId)
-  const user = await getUserById(id)
+  try {
+    const user = await getUserById(id)
 
-  if ((!req.user.admin) && (req.user.id !== id)) {
-    return res.status(403).json({ error: `You don't have access to this feature` })
-  }  
+    if ((!req.user.admin) && (req.user.id !== id)) {
+      return res.status(403).json({ error: `You don't have access to this feature` })
+    }  
 
-  if (user) {
-    try {
+    if (user) {
+    
       await user.destroy()
       res.status(204).end()
-    } catch(e) {
-      next(e)
-    }      
-  } else {
-    res.status(404).json({ error: `The user id ${id} couldn't be found.` })
-  }
+
+    } else {
+      res.status(404).json({ error: `The user id ${id} couldn't be found.` })
+    }
+  } catch(e) {
+    next(e)
+  }          
 }
 
 Users.register = (req, res, next) => {
@@ -206,8 +208,10 @@ Users.forgottenPass = async (req, res, next) => {
   }
 
   try {
-    const reset = await PasswordReset.register(user)
-    return res.status(200).json({ msg: `The reset link was sent to '${email}'` })
+    const resetToken = await PasswordReset.register(user)
+    return res.status(200).json({ 
+      msg: `The reset link was sent to '${email}'`
+    })
   } catch (e) {
     return res.status(500).json({ error: 'There was an error sending the email' })
   }

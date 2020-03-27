@@ -33,7 +33,7 @@ Applications.getAll = async (req, res, next) =>{
 Applications.getById = async (req, res, next) =>{
 	try {
 		const id = req.params.appId
-    const data = await getApplicationById(id)
+    const data = await Applications.getApplicationById(id)
 
     if (data) {
       if ((!req.user.admin) && (data.user.id !== req.user.id)) {
@@ -49,7 +49,7 @@ Applications.getById = async (req, res, next) =>{
 	}
 }
 
-Applications.create = async (req, res, next) =>{
+Applications.create = async (req, res, next) => {
 	try {
     let { name, description = '' } = req.body
     let userId
@@ -63,7 +63,7 @@ Applications.create = async (req, res, next) =>{
 		const token = crypto.randomBytes(20).toString('hex')
     
     const created = await model.create({ name, description, token, userId })
-    const application = await getApplicationById(created.id)
+    const application = await Applications.getApplicationById(created.id)
 
 		res.status(201).json(application)
 	} catch(e) {
@@ -71,9 +71,9 @@ Applications.create = async (req, res, next) =>{
 	}
 }
 
-Applications.update = async (req, res, next) =>{
+Applications.update = async (req, res, next) => {
 	const id = req.params.appId
-	const application = await getApplicationById(id)
+	const application = await Applications.getApplicationById(id)
 
 	if (application) {
     if ((!req.user.admin) && (application.user.id !== req.user.id)) {
@@ -98,7 +98,7 @@ Applications.update = async (req, res, next) =>{
 
 Applications.delete = async (req, res, next) =>{
   const id = req.params.appId
-  const application = await getApplicationById(id) 
+  const application = await Applications.getApplicationById(id)
 
   if (application) {
     if ((!req.user.admin) && (application.user.id !== req.user.id)) {
@@ -116,7 +116,8 @@ Applications.delete = async (req, res, next) =>{
   }
 }
 
-const getApplicationById = async id =>{
+Applications.getApplicationById = async function(id) {
+  id = parseInt(id)
   const application = await model.findOne({
     where: { id },
     attributes: ['id', 'name', 'description', 'token', 'createdAt', 'updatedAt'],
@@ -128,6 +129,34 @@ const getApplicationById = async id =>{
   })
 
   return application
+}
+
+Applications.redirectParams = (req, res, next) => {
+  const parentParams = req.parentParams || {}
+
+  parentParams.appId = parseInt(req.params.appId)
+
+  req.parentParams = parentParams
+  next() 
+}
+
+Applications.validateParams = async (req, res, next) => {
+  try {
+    const id = req.params.appId
+    const application = await Applications.getApplicationById(id)
+
+    if (!application) {
+      return res.status(404).json({ error: `The application id ${id} couldn't be found.` })
+    }
+
+    if ((!req.user.admin) && (application.user.id !== req.user.id)) {
+      return res.status(403).json({ error: `You don't have access to this feature` })
+    }
+
+    next()
+  } catch(e) {
+    next(e)
+  }
 }
 
 module.exports = Applications

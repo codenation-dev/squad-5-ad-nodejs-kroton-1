@@ -19,6 +19,8 @@ PasswordReset.register = async user => {
     const reset = await passwordResetModel.create({ userId, token })    
 
     await sendMail(user.email, reset.token)
+
+    return token
 }
 
 PasswordReset.getUser = async token => {
@@ -36,6 +38,18 @@ PasswordReset.setCompleted = async token => {
     const reset = await passwordResetModel.findOne({ where: { token } })
     reset.completed = true
     reset.save()
+}
+
+PasswordReset.getTokenByEmail = async (email) => {
+    const reset = await passwordResetModel.findOne({ 
+        where: { email },
+        order: [
+            ['createdAt', 'DESC'],
+            ['completed', 'ASC'],
+        ], 
+    })
+    reset.completed = true
+    reset.save()    
 }
 
 module.exports = PasswordReset

@@ -37,13 +37,13 @@ afterAll(async () => {
 beforeEach(async () => {
   await sequelize.sync()
 
-  populateTable(userModel, {
+  await populateTable(userModel, {
     name:'Rogerio Miguel',
     email:'rogerio@hotmail.com',
     password:'12345678'
   })
 
-  populateTable(userModel, {
+  await populateTable(userModel, {
     name:'Samuel Batista',
     email:'samuel@hotmail.com',
     password:'12345678'
@@ -72,7 +72,7 @@ afterEach(async () => {
 
 describe('The API on /v1/applications Endpoint at GET method should...', () => {
   beforeEach(async () => {
-    populateTable(applicationsModel, {
+    await populateTable(applicationsModel, {
       name:'Central de erros teste',
       description:'Api para armazenar e vizualizar erros',
       token:applicationToken,
@@ -134,7 +134,7 @@ describe('The API on /v1/applications Endpoint at GET method should...', () => {
 
 describe('The API on /v1/applications/id Endpoint at GET method should...', () => {
   beforeEach(async () => {
-      populateTable(applicationsModel, {
+    await populateTable(applicationsModel, {
         name:'Central de erros teste',
         description:'Api para armazenar e vizualizar erros',
         token:applicationToken,
@@ -285,7 +285,7 @@ describe('The API on /v1/applications Endpoint at POST method should...', () => 
 
 describe('The API on /v1/applications/id Endpoint at PATCH method should...', () => {
   beforeEach(async () => {
-    populateTable(applicationsModel, {
+    await populateTable(applicationsModel, {
       name:'Central de erros teste',
       description:'Apia para armazenar e vizualizar erros',
       token:applicationToken,
@@ -384,7 +384,7 @@ describe('The API on /v1/applications/id Endpoint at PATCH method should...', ()
 
 describe('The API on /v1/applications/id Endpoint at DELETE method should...', () => {
   beforeEach(async () => {
-    populateTable(applicationsModel, {
+    await populateTable(applicationsModel, {
       name:'Central de erros teste',
       description:'Apia para armazenar e vizualizar erros',
       token:applicationToken,
@@ -440,3 +440,5 @@ describe('The API on /v1/applications/id Endpoint at DELETE method should...', (
     })
   })
 })
+
+

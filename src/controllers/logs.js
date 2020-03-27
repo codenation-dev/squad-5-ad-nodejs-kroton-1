@@ -1,20 +1,23 @@
 const logsModel = require('../models/logs')
+const SendNotification = require('../libs/sendNotification')
 
 let Logs = {}
 
 Logs.getAll = async (req, res, next) => {
   try {
+    let application = {}
     if (!req.user.admin) {
-      req.where.userId = req.user.id
+      application.userId = req.user.id
     }
 
     const data = await logsModel.findAll({
+        where: req.where,
         order: req.order,
         attributes: ['id', 'title', 'level', 'events', 'environment', 'source_address', 'archived', 'createdAt'],
         include: {
           association: 'application',
           attributes: ['id', 'name', 'description', 'userId'],
-          where:{...req.where, deletedAt:null},
+          where:{...application, deletedAt:null},
           include:{
             association:'user',
             attributes:['id', 'name'],
@@ -86,6 +89,8 @@ Logs.create = async (req, res, next) => {
       }        
     }]      
   })
+
+  SendNotification.send(result)
 
   res.status(201).json(result)
 }
