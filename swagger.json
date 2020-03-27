@@ -1,24 +1,31 @@
 {
   "swagger": "2.0",
   "info": {
-    "description": "This is a sample logs api.",
+    "description": "Bem vindo à primeira versão da API de registro e monitoramento de logs Sentinellog!\nSe você possui várias aplicaçoes e ou vários serviços e precisa acompanhar e tomar decisoes com base nos logs, conheça e experimente aqui mesmo a nova API Sentinellog.\nEsta versão da API pode registrar e monitorar logs de aplicaçoes em seus diversos níveis de severidade/tipos, e tenta aderir ao máximo à arquitetura REST.\nNesta página você pode conhecer e experimentar as URLs das rotas da API, os parâmetros de query string que podem ser aplicados para filtrar e selecionar resultados, e as estruturas de logs que são retornadas.\nAlém do método HTTP GET, você também pode usar o método POST para os serviços que requerem maior privacidade.\nÉ possível ainda configurar a emissao de alertas baseadas em triggers pré-definidas.\nToda a parte de registro automático de logs por aplicaçoes pode ser diretamente acoplada à API, as requests sao feitas sem sessao, por meio de um token específico da aplicaçao.\nPara as demais rotas e serviços, como consulta de logs, cadastro de aplicaçoes e etc, recomendamos o uso de um frontend, nesse caso a autenticaçao é feita usando email e senha. \nPor padrão, todos os serviços precisam de autenticaçao, com excessao da rota de registro, que é por onde o usuário se cadastra e também o reset de senha.\nATENÇÃO: Esta versão é preliminar, sujeita a mudanças. Caso você encontre problemas ou queira dar sugestões, por favor entre em contato.",
     "version": "1.0.0",
     "title": "Sentinel Logs",
     "contact": {
       "email": "sentinellog23@gmail.com"
     }
   },
-  "host": "localhost",
+  "host": "apisentinellog.herokuapp.com",
   "basePath": "/v1",
   "tags": [
     {
-      "name": "users"
+      "name": "users",
+      "description": "All routes require JWT authentication. Except: /register, /login, /forgotten-pass, /reset-pass"
     },
     {
-      "name": "applications"
+      "name": "applications",
+      "description": "All routes require JWT authentication."
     },
     {
-      "name": "logs"
+      "name": "logs",
+      "description": "All routes require JWT authentication."
+    },
+    {
+      "name": "notifications",
+      "description": "All routes require JWT authentication."
     }
   ],
   "schemes": [
@@ -37,6 +44,9 @@
         ],
         "responses": {
           "200": {
+            "schema": {
+              "$ref": "#/definitions/getAllReponse"
+            },
             "description": "All users"
           }
         }
@@ -92,7 +102,7 @@
         "tags": [
           "users"
         ],
-        "summary": "Update a user",
+        "summary": "Update a user by id",
         "consumes": [
           "application/json"
         ],
@@ -128,6 +138,39 @@
         "responses": {
           "204": {
             "description": ""
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Get JWT login",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "User",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Login"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/ResponseLogin"
+            },
+            "description": "JWT token"
           }
         }
       }
@@ -236,6 +279,9 @@
         ],
         "responses": {
           "200": {
+            "schema": {
+              "$ref": "#/definitions/getAllReponse"
+            },
             "description": "All your applications"
           }
         }
@@ -291,7 +337,7 @@
         "tags": [
           "applications"
         ],
-        "summary": "Update a application",
+        "summary": "Update a application by id",
         "consumes": [
           "application/json"
         ],
@@ -341,6 +387,9 @@
         ],
         "responses": {
           "200": {
+            "schema": {
+              "$ref": "#/definitions/getAllReponse"
+            },
             "description": "All your logs from all applications"
           }
         }
@@ -425,9 +474,344 @@
           }
         }
       }
+    },
+    "/applications/{applicationId}/notifications": {
+      "get": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "See all app notifications",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/getAllReponse"
+            },
+            "description": "All notifications"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Register a new notification",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "notification details",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Notifications"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "schema": {
+              "$ref": "#/definitions/ResponseNotifications"
+            },
+            "description": "The registered notification"
+          }
+        }
+      }
+    },
+    "/applications/{applicationId}/notifications/{notificationId}": {
+      "get": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Find a notification by id",
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/ResponseNotifications"
+            },
+            "description": "One notification by id"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Update a notification by id",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Notification details",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Notifications"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/ResponseNotifications"
+            },
+            "description": "The updated application"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Delete a notification by id",
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/applications/{applicationId}/notifications/{notificationId}/triggers": {
+      "get": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "See all notification triggers",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/getAllReponse"
+            },
+            "description": "All triggers"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Register a new trigger",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "trigger details",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Triggers"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "schema": {
+              "$ref": "#/definitions/ResponseTriggers"
+            },
+            "description": "The registered trigger"
+          }
+        }
+      }
+    },
+    "/applications/{applicationId}/notifications/{notificationId}/triggers/{triggerId}": {
+      "get": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Find a trigger by id",
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/ResponseTriggers"
+            },
+            "description": "One trigger by id"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Update a trigger by id",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "trigger details",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Triggers"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/ResponseTriggers"
+            },
+            "description": "The updated application"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Delete a trigger by id",
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/applications/{applicationId}/notifications/{notificationId}/alerts": {
+      "get": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "See all notification alerts",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/getAllReponse"
+            },
+            "description": "All alerts"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Register a new alert",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Alert details",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Alerts"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "schema": {
+              "$ref": "#/definitions/ResponseAlerts"
+            },
+            "description": "The registered alert"
+          }
+        }
+      }
+    },
+    "/applications/{applicationId}/notifications/{notificationId}/alerts/{alertId}": {
+      "get": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Find a alert by id",
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/ResponseAlerts"
+            },
+            "description": "One alert by id"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Update a alert by id",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "alert details",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Alerts"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/ResponseAlerts"
+            },
+            "description": "The updated alert"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Delete a alert by id",
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
     }
   },
   "definitions": {
+    "getAllReponse": {
+      "type": "object",
+      "properties": {
+        "total": {
+          "type": "integer"
+        },
+        "data": {
+          "type": "object"
+        }
+      }
+    },
     "Logs": {
       "type": "object",
       "required": [
@@ -641,6 +1025,140 @@
           "type": "string"
         },
         "password": {
+          "type": "string"
+        }
+      }
+    },
+    "Login": {
+      "type": "object",
+      "required": [
+        "email",
+        "password"
+      ],
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "ResponseLogin": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
+        }
+      }
+    },
+    "Notifications": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "detail": {
+          "type": "string"
+        }
+      }
+    },
+    "ResponseNotifications": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "detail": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string"
+        },
+        "triggers": {
+          "type": "object"
+        },
+        "alerts": {
+          "type": "object"
+        }
+      }
+    },
+    "Triggers": {
+      "type": "object",
+      "properties": {
+        "field": {
+          "type": "string"
+        },
+        "condition": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "ResponseTriggers": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "field": {
+          "type": "string"
+        },
+        "condition": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string"
+        }
+      }
+    },
+    "Alerts": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "to": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "ResponseAlerts": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "type": {
+          "type": "string"
+        },
+        "to": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "updatedAt": {
           "type": "string"
         }
       }
