@@ -129,4 +129,6 @@ module.exports = {
   BeforeAll,
   AfterAll,
   createUser,
+  getUserDataKeys,
+  clearUserData,
 }
