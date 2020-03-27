@@ -21,13 +21,13 @@ let user
 const Apps = {
     app1: {
         new: {
-            name: 'App 1',
+            name: 'Application number 1',
             description: 'Application 1',
         },
     },
     app2: {
         new: {
-            name: 'App 2',
+            name: 'Application number 2',
             description: 'Application 1',            
         }
     }

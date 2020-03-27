@@ -244,7 +244,13 @@ describe('The API on /v1/users/ Endpoint at GET method should...', () => {
         password: '12345678',
       })
   
-  
+      await populateTable(userModel, {
+        name: 'Henrique Marti',
+        email: 'henrique@marti.com.br',
+        password: '12345678',
+        admin: false,
+      })      
+      
       const getToken = async () => {
         return response = await request(app).post('/v1/login').send({
           email: 'rogerio@hotmail.com',
@@ -336,7 +342,7 @@ describe('The API on /v1/users/ Endpoint at GET method should...', () => {
 
     test('return 404 as status if the user id couldn be found', async () => {
       expect.assertions(2)
-      const res = await request(app).post(`/v1/users/4/change-pass`).send({
+      const res = await request(app).post(`/v1/users/999/change-pass`).send({
         "password": "123456789"
   
       }).set({
@@ -345,7 +351,7 @@ describe('The API on /v1/users/ Endpoint at GET method should...', () => {
       
       expect(res.statusCode).toEqual(404)
       expect(res.body).toMatchObject({ 
-        error: `The user id 4 couldn't be found.` 
+        error: `The user id 999 couldn't be found.` 
       })
     })
 
@@ -425,8 +431,8 @@ test('return 204 as status code and the user forgottenPass', async () => {
   expect.assertions(2)
       
 
-   const res = await request(app).post('/v1/users//forgotten-pass').send({
-        "email": "rogerio@hotmail.com"
+   const res = await request(app).post('/v1/users/forgotten-pass').send({
+        "email": "henrique@marti.com.br"
    }).set({
      Authorization: token
    })
@@ -434,7 +440,7 @@ test('return 204 as status code and the user forgottenPass', async () => {
    
    expect(res.statusCode).toEqual(200)
    expect(res.body).toMatchObject({
-    msg: `The reset link was sent to 'rogerio@hotmail.com'`
+    msg: `The reset link was sent to 'henrique@marti.com.br'`
    })
  })
 
@@ -442,7 +448,7 @@ test('return 204 as status code and the user forgottenPass', async () => {
   expect.assertions(2)
       
 
-   const res = await request(app).post('/v1/users//forgotten-pass').send({
+   const res = await request(app).post('/v1/users/forgotten-pass').send({
         "email": ""
    }).set({
      Authorization: token
@@ -458,7 +464,7 @@ test('return 204 as status code and the user forgottenPass', async () => {
   expect.assertions(2)
       
 
-   const res = await request(app).post('/v1/users//forgotten-pass').send({
+   const res = await request(app).post('/v1/users/forgotten-pass').send({
         "email": "teste@gmail.com"
    }).set({
      Authorization: token
