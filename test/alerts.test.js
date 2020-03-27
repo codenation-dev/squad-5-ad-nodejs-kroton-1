@@ -28,7 +28,7 @@ const Apps = {
     },
     app2: {
         new: {
-            name: 'App 1',
+            name: 'App 2',
             description: 'Application 1',            
         }
     }
