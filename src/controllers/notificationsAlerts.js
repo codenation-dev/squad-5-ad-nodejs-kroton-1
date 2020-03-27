@@ -106,6 +106,7 @@ Alerts.delete = async (req, res, next) => {
 }
 
 Alerts.getAlertById = async (id) => {
+  id = parseInt(id)
   const alert = await model.findOne({
     where: { id }, 
     attributes: ['id', 'type', 'to', 'message', 'createdAt', 'updatedAt'],

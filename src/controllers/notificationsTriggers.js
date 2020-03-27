@@ -106,6 +106,7 @@ Triggers.delete = async (req, res, next) => {
 }
 
 Triggers.getTriggerById = async (id) => {
+  id = parseInt(id)
   const trigger = await model.findOne({
     where: { id }, 
     attributes: ['id', 'field', 'condition', 'value', 'createdAt', 'updatedAt'],

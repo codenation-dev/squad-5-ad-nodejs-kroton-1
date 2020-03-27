@@ -117,6 +117,7 @@ Applications.delete = async (req, res, next) =>{
 }
 
 Applications.getApplicationById = async function(id) {
+  id = parseInt(id)
   const application = await model.findOne({
     where: { id },
     attributes: ['id', 'name', 'description', 'token', 'createdAt', 'updatedAt'],
@@ -140,18 +141,22 @@ Applications.redirectParams = (req, res, next) => {
 }
 
 Applications.validateParams = async (req, res, next) => {
-  const id = req.params.appId
-  const application = await Applications.getApplicationById(id)
+  try {
+    const id = req.params.appId
+    const application = await Applications.getApplicationById(id)
 
-  if (!application) {
-    return res.status(404).json({ error: `The application id ${id} couldn't be found.` })
+    if (!application) {
+      return res.status(404).json({ error: `The application id ${id} couldn't be found.` })
+    }
+
+    if ((!req.user.admin) && (application.user.id !== req.user.id)) {
+      return res.status(403).json({ error: `You don't have access to this feature` })
+    }
+
+    next()
+  } catch(e) {
+    next(e)
   }
-
-  if ((!req.user.admin) && (application.user.id !== req.user.id)) {
-    return res.status(403).json({ error: `You don't have access to this feature` })
-  }
-
-  next()
 }
 
 module.exports = Applications
