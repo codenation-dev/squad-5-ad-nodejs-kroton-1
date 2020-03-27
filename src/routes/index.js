@@ -15,7 +15,8 @@ router.get('/', (req, res) => {
     login: `${protocol}://${host}/v1/login`,
     users: `${protocol}://${host}/v1/users`,
     logs: `${protocol}://${host}/v1/logs`,
-    applications:`${protocol}://v1/applications`
+    applications:`${protocol}://${host}/v1/applications`,
+    documentation:`${protocol}://${host}/v1/api-docs`
   })
 })
 
