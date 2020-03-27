@@ -117,7 +117,7 @@ describe('The API on /v1/users/ Endpoint at GET method should...', () => {
   
   describe('The API on /v1/users/:userID Endpoint at GET method should...', () => {
     beforeEach(async () => {
-      populateTable(userModel, {
+      await populateTable(userModel, {
         name: 'Rogerio Miguel',
         email: 'rogerio@hotmail.com',
         password: '12345678'
@@ -198,20 +198,20 @@ describe('The API on /v1/users/ Endpoint at GET method should...', () => {
   
   describe('The API on /v1/users Endpoint at POST method should...', () => {
     beforeEach(async () => {
-      populateTable(userModel, {
+      await populateTable(userModel, {
         name: 'Rogerio Miguel',
         email: 'rogerio@hotmail.com',
         password: '12345678',
         admin: true
       })
 
-      populateTable(userModel, {
+      await populateTable(userModel, {
         name: 'Rogerio Miguel 2 ',
         email: 'rogerio2@hotmail.com',
         password: '12345678',
       })
 
-      populateTable(userModel, {
+      await populateTable(userModel, {
         name: 'Rogerio Miguel 3 ',
         email: 'rogerio3@hotmail.com',
         password: '12345678',
@@ -449,13 +449,13 @@ describe('The API on /v1/users/ Endpoint at GET method should...', () => {
   
   describe('The API on /v1/users/:userID Endpoint at PATCH method should...', () => {
     beforeEach(async () => {
-      populateTable(userModel, {
+      await populateTable(userModel, {
         name: 'Ronielson Macedo',
         email: 'ronielson@gmail.com',
         password: '12345678'
       })
   
-      populateTable(userModel, {
+      await populateTable(userModel, {
         name: 'Ronielson Macedo 3 ',
         email: 'ronielson3@gmail.com',
         password: '12345678'
@@ -549,13 +549,13 @@ describe('The API on /v1/users/ Endpoint at GET method should...', () => {
   
   describe('The API on /v1/users/userID Endpoint at DELETE method should...', () => {
     beforeEach(async () => {
-      populateTable(userModel, {
+      await populateTable(userModel, {
         name: 'Ronielson Macedo',
         email: 'ronielson@gmail.com',
         password: '12345678'
       })
   
-      populateTable(userModel, {
+      await populateTable(userModel, {
         name: 'Ronielson Macedo 3 ',
         email: 'ronielson3@gmail.com',
         password: '12345678'
