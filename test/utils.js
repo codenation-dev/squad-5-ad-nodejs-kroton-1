@@ -43,7 +43,7 @@ const truncateAllTables = async () => {
 
   await truncate('notifications')
   await truncate('notification_triggers')
-  await truncate('notification_alertssers')
+  await truncate('notification_alerts')
   await truncate('password_resets')
 }
 
