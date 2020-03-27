@@ -1,4 +1,5 @@
 const logsModel = require('../models/logs')
+const SendNotification = require('../libs/sendNotification')
 
 let Logs = {}
 
@@ -86,6 +87,8 @@ Logs.create = async (req, res, next) => {
       }        
     }]      
   })
+
+  SendNotification.send(result)
 
   res.status(201).json(result)
 }
