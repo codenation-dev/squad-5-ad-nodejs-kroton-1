@@ -14,7 +14,8 @@ class applications extends Model {
     }
 
     static associate(models) {
-        this.belongsTo(models.users, {foreignKey:'userId', as:'user'})
+        this.belongsTo(models.users, { foreignKey: 'userId', as: 'user' })
+        this.hasMany(models.notifications, { foreignKey: 'applicationId', as: 'notifications' })
     }
 }
 
