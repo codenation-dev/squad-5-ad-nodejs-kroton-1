@@ -31,7 +31,7 @@ router.use((err, req, res, next) => {
       error += err.errors[i].message + ''
     }
   } else {
-    error = 'A solicitação é inválida'
+    error = 'The request is incorrect'
   }
   res.status(400).json({ error })    
 })
