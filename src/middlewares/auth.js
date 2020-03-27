@@ -8,12 +8,6 @@ module.exports = {
       return
     }
 
-    if ((url === '/v1/users') && (req.method === 'POST')) {
-      next()
-      return
-    }
-
-
     try {
       const token = req.headers.authorization
       const decode = jwt.verify(token, process.env.JWT_KEY)
