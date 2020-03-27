@@ -57,51 +57,51 @@ Alerts.create = async (req, res, next) =>{
 }
 
 Alerts.update = async (req, res, next) =>{
-  const id = req.params.alertId
-  let alert = await Alerts.getAlertById(id)
+  try {
+    const id = req.params.alertId
+    let alert = await Alerts.getAlertById(id)
 
-	if (alert) {
-    const notificationId = req.parentParams.notificationId
-    if (alert.notification.id !== notificationId) {
-      return res.status(403).json({ error: `The alert id ${id} does not belong to that notification` })
-    }
+    if (alert) {
+      const notificationId = req.parentParams.notificationId
+      if (alert.notification.id !== notificationId) {
+        return res.status(403).json({ error: `The alert id ${id} does not belong to that notification` })
+      }
 
-		let { type, to, message } = req.body
-		
-		alert.type = type || alert.type
-    alert.to = to || alert.to
-    alert.message = message || alert.message
-    
-    try {
+      let { type, to, message } = req.body
+      
+      alert.type = type || alert.type
+      alert.to = to || alert.to
+      alert.message = message || alert.message
+      
       await alert.save()
       alert = clearAlert(alert)
       return res.status(200).json(alert)
-    } catch(e) {
-      next(e)
-    }    
-  } else {
-    return res.status(404).json({ error: `The alert id ${id} couldn't be found.` })  
+    } else {
+      return res.status(404).json({ error: `The alert id ${id} couldn't be found.` })  
+    }
+  } catch(e) {
+    next(e)
   }
 }
 
 Alerts.delete = async (req, res, next) => {
-  const id = req.params.alertId
-  let alert = await Alerts.getAlertById(id)
+  try {
+    const id = req.params.alertId
+    let alert = await Alerts.getAlertById(id)
 
-  if (alert) {
-    const notificationId = req.parentParams.notificationId
-    if (alert.notification.id !== notificationId) {
-      return res.status(403).json({ error: `The alert id ${id} does not belong to that notification` })
-    }
+    if (alert) {
+      const notificationId = req.parentParams.notificationId
+      if (alert.notification.id !== notificationId) {
+        return res.status(403).json({ error: `The alert id ${id} does not belong to that notification` })
+      }
 
-    try {
       await alert.destroy()
       res.status(204).end()
-    } catch(e) {
-      next(e)
-    }      
-  } else {
-    res.status(404).json({ error: `The alert id ${id} couldn't be found.` })
+    } else {
+      res.status(404).json({ error: `The alert id ${id} couldn't be found.` })
+    }
+  } catch(e) {
+    next(e)
   }
 }
 

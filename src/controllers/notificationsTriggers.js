@@ -57,51 +57,51 @@ Triggers.create = async (req, res, next) =>{
 }
 
 Triggers.update = async (req, res, next) =>{
-  const id = req.params.triggerId
-  let trigger = await Triggers.getTriggerById(id)
+  try {
+    const id = req.params.triggerId
+    let trigger = await Triggers.getTriggerById(id)
 
-	if (trigger) {
-    const notificationId = req.parentParams.notificationId
-    if (trigger.notification.id !== notificationId) {
-      return res.status(403).json({ error: `The trigger id ${id} does not belong to that notification` })
-    }
+    if (trigger) {
+      const notificationId = req.parentParams.notificationId
+      if (trigger.notification.id !== notificationId) {
+        return res.status(403).json({ error: `The trigger id ${id} does not belong to that notification` })
+      }
 
-		let { field, condition, value } = req.body
-		
-		trigger.field = field || trigger.field
-    trigger.condition = condition || trigger.condition
-    trigger.value = value || trigger.value
-    
-    try {
+      let { field, condition, value } = req.body
+      
+      trigger.field = field || trigger.field
+      trigger.condition = condition || trigger.condition
+      trigger.value = value || trigger.value
+      
       await trigger.save()
       trigger = clearTrigger(trigger)
       return res.status(200).json(trigger)
-    } catch(e) {
-      next(e)
-    }    
-  } else {
-    return res.status(404).json({ error: `The trigger id ${id} couldn't be found.` })  
+    } else {
+      return res.status(404).json({ error: `The trigger id ${id} couldn't be found.` })  
+    }
+  } catch(e) {
+    next(e)
   }
 }
 
 Triggers.delete = async (req, res, next) => {
-  const id = req.params.triggerId
-  let trigger = await Triggers.getTriggerById(id)
+  try {
+    const id = req.params.triggerId
+    let trigger = await Triggers.getTriggerById(id)
 
-  if (trigger) {
-    const notificationId = req.parentParams.notificationId
-    if (trigger.notification.id !== notificationId) {
-      return res.status(403).json({ error: `The trigger id ${id} does not belong to that notification` })
-    }
+    if (trigger) {
+      const notificationId = req.parentParams.notificationId
+      if (trigger.notification.id !== notificationId) {
+        return res.status(403).json({ error: `The trigger id ${id} does not belong to that notification` })
+      }
 
-    try {
       await trigger.destroy()
       res.status(204).end()
-    } catch(e) {
-      next(e)
-    }      
-  } else {
-    res.status(404).json({ error: `The trigger id ${id} couldn't be found.` })
+    } else {
+      res.status(404).json({ error: `The trigger id ${id} couldn't be found.` })
+    }
+  } catch(e) {
+    next(e)
   }
 }
 

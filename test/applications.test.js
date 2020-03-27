@@ -30,7 +30,6 @@ afterAll(async () => {
   await sequelize.query('DROP TABLE IF EXISTS logs;')
   await sequelize.query('DROP TABLE IF EXISTS apllications;')
   await sequelize.query('DROP TABLE IF EXISTS users;')
-  await sequelize.query('SET FOREIGN_KEY_CHECKS = 1;')
   await sequelize.close()
 })
 
@@ -217,6 +216,19 @@ describe('The API on /v1/applications/id Endpoint at GET method should...', () =
       error:`The application id 2 couldn't be found.`
     })
   })
+
+  test(`return 404 as status code and 'The request is incorrect`, async () => {
+    expect.assertions(2)
+
+    const res = await request(app).get('/v1/applications/abc').set({
+      Authorization:token
+    })
+
+    expect(res.statusCode).toEqual(400)
+    expect(res.body).toMatchObject({
+      error:`The request is incorrect`
+    })
+  })
 })
 
 describe('The API on /v1/applications Endpoint at POST method should...', () => {
@@ -380,6 +392,19 @@ describe('The API on /v1/applications/id Endpoint at PATCH method should...', ()
       error:`The application id 2 couldn't be found.`
     })
   })
+
+  test(`return 404 as status code and 'The request is incorrect`, async () => {
+    expect.assertions(2)
+
+    const res = await request(app).patch('/v1/applications/abc').set({
+      Authorization:token
+    })
+
+    expect(res.statusCode).toEqual(400)
+    expect(res.body).toMatchObject({
+      error:`The request is incorrect`
+    })
+  })
 })
 
 describe('The API on /v1/applications/id Endpoint at DELETE method should...', () => {
@@ -437,6 +462,19 @@ describe('The API on /v1/applications/id Endpoint at DELETE method should...', (
     expect(res.statusCode).toEqual(404)
     expect(res.body).toMatchObject({
       error:`The application id 2 couldn't be found.`
+    })
+  })
+
+  test(`return 404 as status code and 'The request is incorrect`, async () => {
+    expect.assertions(2)
+
+    const res = await request(app).delete('/v1/applications/abc').set({
+      Authorization:token
+    })
+
+    expect(res.statusCode).toEqual(400)
+    expect(res.body).toMatchObject({
+      error:`The request is incorrect`
     })
   })
 })

@@ -1,6 +1,4 @@
 const nofiticationModel = require('../src/models/notifications')
-const triggerModel = require('../src/models/notificationsTriggers')
-const alertModel = require('../src/models/notificationsAlerts')
 const request = require('supertest')
 const { app } = require('../src/app.js')
 
@@ -23,13 +21,13 @@ let user
 const Apps = {
     app1: {
         new: {
-            name: 'App 1',
+            name: 'Application number 1',
             description: 'Application 1',
         },
     },
     app2: {
         new: {
-            name: 'App 1',
+            name: 'Application number 2',
             description: 'Application 1',            
         }
     }
@@ -774,11 +772,10 @@ describe('The API on /v1/applications/<appId>/notifications/<notificationId> End
     expect(res.statusCode).toEqual(204)
   })
 
-  test(`for admin user on App 1 updating notification 2 returns 403 as status code and message 'The notification id <notificationId> does not belong to that application'`, async () => {
+  test(`for admin user on App 1 deleting notification 2 returns 403 as status code and message 'The notification id <notificationId> does not belong to that application'`, async () => {
     expect.assertions(2)
 
     const data = cloneObject(Notifications.notification2.data)
-    data.detail = 'alterado'
     const res = await request(app).delete(`/v1/applications/${Apps.app1.data.id}/notifications/${data.id}`).set({
       Authorization: user.admin.jwt
     })
@@ -787,11 +784,10 @@ describe('The API on /v1/applications/<appId>/notifications/<notificationId> End
     expect(res.body).toMatchObject({ error: `The notification id ${data.id} does not belong to that application` })
   })
 
-  test(`for admin user on App 2 updating notification 1 returns 403 as status code and message 'The notification id <notificationId> does not belong to that application'`, async () => {
+  test(`for admin user on App 2 deleting notification 1 returns 403 as status code and message 'The notification id <notificationId> does not belong to that application'`, async () => {
     expect.assertions(2)
 
     const data = cloneObject(Notifications.notification1.data)
-    data.detail = 'alterado'
     const res = await request(app).delete(`/v1/applications/${Apps.app2.data.id}/notifications/${data.id}`).set({
       Authorization: user.admin.jwt
     })

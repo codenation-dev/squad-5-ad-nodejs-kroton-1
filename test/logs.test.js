@@ -114,7 +114,6 @@ describe('The API on /v1/logs Endpoint at GET method should...', () => {
 
   })
 
-
   test(`return the 'data' property with all items from DB`, async () => {
 
     expect.assertions(1)
@@ -139,6 +138,222 @@ describe('The API on /v1/logs Endpoint at GET method should...', () => {
         }]
     })
   })
+
+  test(`test filter =`, async () => {
+
+    expect.assertions(1)
+
+    const res = await request(app).get('/v1/logs?filter=id=1').set({
+      Authorization: token
+    })
+
+
+    expect(res.body).toMatchObject({
+
+      total: 1,
+      data:
+        [{
+          id: 1,
+          title: 'Erro de BD',
+          level: 'error',
+          events: 2,
+          environment: 'prod',
+          source_address: '200.135.14.129',
+          archived: null,
+        }]
+    })
+  })  
+
+  test(`test filter in`, async () => {
+
+    expect.assertions(1)
+
+    const res = await request(app).get('/v1/logs?filter=id=1,0,2').set({
+      Authorization: token
+    })
+
+
+    expect(res.body).toMatchObject({
+
+      total: 1,
+      data:
+        [{
+          id: 1,
+          title: 'Erro de BD',
+          level: 'error',
+          events: 2,
+          environment: 'prod',
+          source_address: '200.135.14.129',
+          archived: null,
+        }]
+    })
+  })    
+
+  
+
+  test(`test filter >=`, async () => {
+
+    expect.assertions(1)
+
+    const res = await request(app).get('/v1/logs?filter=id>=1').set({
+      Authorization: token
+    })
+
+
+    expect(res.body).toMatchObject({
+
+      total: 1,
+      data:
+        [{
+          id: 1,
+          title: 'Erro de BD',
+          level: 'error',
+          events: 2,
+          environment: 'prod',
+          source_address: '200.135.14.129',
+          archived: null,
+        }]
+    })
+  })    
+
+  test(`test filter >`, async () => {
+
+    expect.assertions(1)
+
+    const res = await request(app).get('/v1/logs?filter=id>0').set({
+      Authorization: token
+    })
+
+
+    expect(res.body).toMatchObject({
+
+      total: 1,
+      data:
+        [{
+          id: 1,
+          title: 'Erro de BD',
+          level: 'error',
+          events: 2,
+          environment: 'prod',
+          source_address: '200.135.14.129',
+          archived: null,
+        }]
+    })
+  })      
+
+  test(`test filter <=`, async () => {
+
+    expect.assertions(1)
+
+    const res = await request(app).get('/v1/logs?filter=id<=1').set({
+      Authorization: token
+    })
+
+
+    expect(res.body).toMatchObject({
+
+      total: 1,
+      data:
+        [{
+          id: 1,
+          title: 'Erro de BD',
+          level: 'error',
+          events: 2,
+          environment: 'prod',
+          source_address: '200.135.14.129',
+          archived: null,
+        }]
+    })
+  })    
+
+  test(`test filter <`, async () => {
+
+    expect.assertions(1)
+
+    const res = await request(app).get('/v1/logs?filter=id<2').set({
+      Authorization: token
+    })
+
+
+    expect(res.body).toMatchObject({
+
+      total: 1,
+      data:
+        [{
+          id: 1,
+          title: 'Erro de BD',
+          level: 'error',
+          events: 2,
+          environment: 'prod',
+          source_address: '200.135.14.129',
+          archived: null,
+        }]
+    })
+  })        
+
+  test(`test order`, async () => {
+
+    expect.assertions(1)
+
+    const res = await request(app).get('/v1/logs?order=id').set({
+      Authorization: token
+    })
+
+
+    expect(res.body).toMatchObject({
+
+      total: 1,
+      data:
+        [{
+          id: 1,
+          title: 'Erro de BD',
+          level: 'error',
+          events: 2,
+          environment: 'prod',
+          source_address: '200.135.14.129',
+          archived: null,
+        }]
+    })
+  })    
+
+  test(`test environment`, async () => {
+
+    expect.assertions(1)
+
+    const res = await request(app).get('/v1/logs?environment=prod').set({
+      Authorization: token
+    })
+
+
+    expect(res.body).toMatchObject({
+
+      total: 1,
+      data:
+        [{
+          id: 1,
+          title: 'Erro de BD',
+          level: 'error',
+          events: 2,
+          environment: 'prod',
+          source_address: '200.135.14.129',
+          archived: null,
+        }]
+    })
+  })      
+
+  test(`test invalid environment`, async () => {
+
+    expect.assertions(1)
+
+    const res = await request(app).get('/v1/logs?environment=prod2').set({
+      Authorization: token
+    })
+
+
+    expect(res.body).toMatchObject({ "errors": [
+      "Value 'prod2' is invalid for 'environment' parameter, the valid values are [prod,homolog,dev]"
+    ]})
+  })        
 
 }) /* Fim do describe */
 

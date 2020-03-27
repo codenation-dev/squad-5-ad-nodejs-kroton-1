@@ -51,8 +51,14 @@ Applications.getById = async (req, res, next) =>{
 
 Applications.create = async (req, res, next) => {
 	try {
-    let { name, description = '' } = req.body
+    let { name = '', description = '' } = req.body
     let userId
+
+    name = `${name}`
+
+    if (name.length < 10) {
+      return res.status(400).json({ error: 'The application name must be at least 10 characters' })
+    } 
 
     if(req.user.admin) {
       userId = req.body.userId || req.user.id
@@ -72,47 +78,50 @@ Applications.create = async (req, res, next) => {
 }
 
 Applications.update = async (req, res, next) => {
-	const id = req.params.appId
-	const application = await Applications.getApplicationById(id)
+  try{
+    const id = req.params.appId
+    const application = await Applications.getApplicationById(id)
 
-	if (application) {
-    if ((!req.user.admin) && (application.user.id !== req.user.id)) {
-      return res.status(403).json({ error: `You don't have access to this feature` })
-    } 
+    if (application) {
+      if ((!req.user.admin) && (application.user.id !== req.user.id)) {
+        return res.status(403).json({ error: `You don't have access to this feature` })
+      } 
 
-		let { name, description } = req.body
-		
-		application.name = name || application.name
-		application.description = description || application.description
-    
-    try {
+      let { name, description } = req.body
+      
+      application.name = name || application.name
+      application.description = description || application.description
+      
+      
       await application.save()
       return res.status(200).json(application)
-    } catch(e) {
-      next(e)
-    }    
-  } else {
-    return res.status(404).json({ error: `The application id ${id} couldn't be found.` })  
+        
+    } else {
+      return res.status(404).json({ error: `The application id ${id} couldn't be found.` })  
+    }
+  } catch(e) {
+    next(e)
   }
 }
 
 Applications.delete = async (req, res, next) =>{
-  const id = req.params.appId
-  const application = await Applications.getApplicationById(id)
+  try{
+    const id = req.params.appId
+    const application = await Applications.getApplicationById(id)
 
-  if (application) {
-    if ((!req.user.admin) && (application.user.id !== req.user.id)) {
-      return res.status(403).json({ error: `You don't have access to this feature` })
-    }
+    if (application) {
+      if ((!req.user.admin) && (application.user.id !== req.user.id)) {
+        return res.status(403).json({ error: `You don't have access to this feature` })
+      }
 
-    try {
+      
       await application.destroy()
-      res.status(204).end()
-    } catch(e) {
-      next(e)
-    }      
-  } else {
-    res.status(404).json({ error: `The application id ${id} couldn't be found.` })
+      res.status(204).end()     
+    } else {
+      res.status(404).json({ error: `The application id ${id} couldn't be found.` })
+    }
+  } catch(e) {
+    next(e)
   }
 }
 
