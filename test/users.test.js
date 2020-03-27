@@ -163,6 +163,7 @@ describe('The API on /v1/users/ Endpoint at GET method should...', () => {
       ])
   
     })
+    
   
     test('return 200 as status code and the item founded', async () => {
       expect.assertions(2)
@@ -354,9 +355,102 @@ describe('The API on /v1/users/ Endpoint at GET method should...', () => {
       })
     })
 
-    // IMplementar Reset Pass
+    // Implementar Reset Pass
+
+    
+
+    test('return 204 as status code and token is empty', async () => {
+      expect.assertions(2)
+      const res = await request(app).post('/v1/users/reset-pass').send({
+        "token": "",
+        "password": "123456789"
+      }).set({
+        Authorization: token
+      })
+    
+      expect(res.statusCode).toEqual(400)
+      expect(res.body).toMatchObject({
+        error: 'The token field cannot be empty' 
+      })
+    })
+
+    test('return 204 as status code and token is invalid', async () => {
+      expect.assertions(2)
+      const res = await request(app).post('/v1/users/reset-pass').send({
+        "token": "adadssdsdasdasdas",
+        "password": "123456789"
+      }).set({
+        Authorization: token
+      })
+    
+      expect(res.statusCode).toEqual(400)
+      expect(res.body).toMatchObject({
+        error: 'Invalid token' 
+      })
+    })
+
+  
+    
 
     // Implementar FORGOTTENPASS
+
+
+test('return 204 as status code and the user forgottenPass', async () => {
+  expect.assertions(2)
+      
+
+   const res = await request(app).post('/v1/users//forgotten-pass').send({
+        "email": "rogerio@hotmail.com"
+   }).set({
+     Authorization: token
+   })
+
+   
+   expect(res.statusCode).toEqual(200)
+   expect(res.body).toMatchObject({
+    msg: `The reset link was sent to 'rogerio@hotmail.com'`
+   })
+ })
+
+ test('return 400 as status code if email is empty', async () => {
+  expect.assertions(2)
+      
+
+   const res = await request(app).post('/v1/users//forgotten-pass').send({
+        "email": ""
+   }).set({
+     Authorization: token
+   })
+
+   console.log('CORPO', res.body)
+   
+   expect(res.statusCode).toEqual(400)
+   expect(res.body).toMatchObject({
+    error: 'The email field cannot be empty'
+   })
+ })
+
+ test('return 400 as status code if email is not registered', async () => {
+  expect.assertions(2)
+      
+
+   const res = await request(app).post('/v1/users//forgotten-pass').send({
+        "email": "teste@gmail.com"
+   }).set({
+     Authorization: token
+   })
+
+   
+   expect(res.statusCode).toEqual(400)
+   expect(res.body).toMatchObject({
+    error: 'The email is not registered'
+   })
+ })
+
+
+
+
+    // implementar aa cobertura nos catch's(error)
 
     
 
