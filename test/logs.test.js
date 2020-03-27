@@ -153,13 +153,13 @@ describe('The API on /v1/logs/id Endpoint at GET method should...', () => {
     await sequelize.query('TRUNCATE TABLE users;')
     await sequelize.sync()
 
-    populateTable(userModel, {
+    await populateTable(userModel, {
       name: 'Ronielson Macedo',
       email: 'ronielson@gmail.com',
       password: '12345678'
     })
 
-    populateTable(userModel, {
+    await populateTable(userModel, {
       name: 'Ronielson Macedo 2',
       email: 'ronielson2@gmail.com',
       password: '12345678'
@@ -168,14 +168,14 @@ describe('The API on /v1/logs/id Endpoint at GET method should...', () => {
 
 
 
-    populateTable(applicationsModel, {
+    await populateTable(applicationsModel, {
       name: 'Central de erros teste',
       description: 'Apia para armazenar e vizualizar erros',
       token: applicationToken,
       userId: 1
     })
 
-    populateTable(logsModel, {
+    await populateTable(logsModel, {
       title: "Erro de BD",
       detail: "Erro ao tentar conectar no banco de dados",
       level: "error",
@@ -303,13 +303,13 @@ describe('The API on /v1/logs/id Endpoint at GET method should...', () => {
 describe('The API on /v1/logs Endpoint at POST method should...', () => {
   beforeEach(async () => {
 
-    populateTable(userModel, {
+    await populateTable(userModel, {
       name: 'Ronielson Macedo',
       email: 'ronielson@gmail.com',
       password: '12345678'
     })
 
-    populateTable(applicationsModel, {
+    await populateTable(applicationsModel, {
       name: 'Central de erros teste',
       description: 'Apia para armazenar e vizualizar erros',
       token: applicationToken,
@@ -415,20 +415,20 @@ describe('The API on /v1/logs Endpoint at POST method should...', () => {
 
 describe('The API on /v1/logs Endpoint at POST method should...', () => {
   beforeEach(async () => {
-    populateTable(userModel, {
+    await populateTable(userModel, {
       name: 'Ronielson Macedo',
       email: 'ronielson@gmail.com',
       password: '12345678'
     })
 
-    populateTable(applicationsModel, {
+    await populateTable(applicationsModel, {
       name: 'Central de erros teste',
       description: 'Apia para armazenar e vizualizar erros',
       token: applicationToken,
       userId: 1
     })
 
-    populateTable(logsModel, {
+    await populateTable(logsModel, {
       title: "Erro de BD",
       detail: "Erro ao tentar conectar no banco de dados",
       level: "error",
@@ -486,20 +486,20 @@ describe('The API on /v1/logs Endpoint at POST method should...', () => {
 
 describe('The API on /v1/logs Endpoint at POST method should...', () => {
   beforeEach(async () => {
-    populateTable(userModel, {
+    await populateTable(userModel, {
       name: 'Ronielson Macedo',
       email: 'ronielson@gmail.com',
       password: '12345678'
     })
 
-    populateTable(applicationsModel, {
+    await populateTable(applicationsModel, {
       name: 'Central de erros teste',
       description: 'Apia para armazenar e vizualizar erros',
       token: applicationToken,
       userId: 1
     })
 
-    populateTable(logsModel, {
+    await populateTable(logsModel, {
       title: "Erro de BD",
       detail: "Erro ao tentar conectar no banco de dados",
       level: "error",
