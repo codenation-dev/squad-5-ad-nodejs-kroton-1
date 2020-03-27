@@ -164,13 +164,14 @@ describe('The API on /v1/logs Endpoint at GET method should...', () => {
     })
   })  
 
-  test(`test filter !=`, async () => {
+  test(`test filter in`, async () => {
 
     expect.assertions(1)
 
-    const res = await request(app).get('/v1/logs?filter=id!=0').set({
+    const res = await request(app).get('/v1/logs?filter=id=1,0,2').set({
       Authorization: token
     })
+
 
     expect(res.body).toMatchObject({
 
@@ -187,6 +188,8 @@ describe('The API on /v1/logs Endpoint at GET method should...', () => {
         }]
     })
   })    
+
+  
 
   test(`test filter >=`, async () => {
 
@@ -337,6 +340,20 @@ describe('The API on /v1/logs Endpoint at GET method should...', () => {
         }]
     })
   })      
+
+  test(`test invalid environment`, async () => {
+
+    expect.assertions(1)
+
+    const res = await request(app).get('/v1/logs?environment=prod2').set({
+      Authorization: token
+    })
+
+
+    expect(res.body).toMatchObject({ "errors": [
+      "Value 'prod2' is invalid for 'environment' parameter, the valid values are [prod,homolog,dev]"
+    ]})
+  })        
 
 }) /* Fim do describe */
 
