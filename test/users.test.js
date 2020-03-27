@@ -62,7 +62,33 @@ describe('The API on /v1/users/ Endpoint at GET method should...', () => {
       await sequelize.query('TRUNCATE TABLE users;')
     })
   
+    /* Rota / */
+    test(`return 200 as status code and have 'total' and 'data' as properties`, async () => {
+      expect.assertions(2)
   
+      const res = await request(app).get('/v1/')
+      expect(res.statusCode).toEqual(200)
+      expect(Object.keys(res.body)).toMatchObject([
+        'login',
+        'users',
+        'logs',
+        'applications'
+      ])
+    })
+
+    test(`return error for the userID`, async () => {
+      expect.assertions(2)
+  
+      const res = await request(app).get('/v1/users/ABC').set({
+        Authorization: token
+      })
+      expect(res.statusCode).toEqual(400)
+      expect(res.body).toMatchObject({
+        error: 'The request is incorrect'
+      })
+    })
+
+
   
     test(`return 200 as status code and have 'total' and 'data' as properties`, async () => {
       expect.assertions(2)
@@ -421,8 +447,6 @@ test('return 204 as status code and the user forgottenPass', async () => {
    }).set({
      Authorization: token
    })
-
-   console.log('CORPO', res.body)
    
    expect(res.statusCode).toEqual(400)
    expect(res.body).toMatchObject({
@@ -500,6 +524,22 @@ test('return 204 as status code and the user forgottenPass', async () => {
         "name": "Ronielson Macedo",
         "email": "ronimacedo2@teste.com",
       })
+    })
+
+
+
+    test('return 400 as status code and the request is incorrect ', async () => {
+      expect.assertions(2)
+      const res = await request(app).post('/v1/users').send({
+        "name": "Ronielson Macedo",
+        "email": "ronimacedo2@.teste.com",
+        "password": "12345678"
+      }).set({
+        Authorization: token
+      })
+    
+      expect(res.statusCode).toEqual(400)
+      expect(res.body).toMatchObject({error: 'The e-mail field is invalid.'})
     })
   
     test('return 400 as status code if the password is empty', async () => {
@@ -685,6 +725,20 @@ test('return 204 as status code and the user forgottenPass', async () => {
       expect(res.statusCode).toEqual(204)
       expect(res.body).toMatchObject({})
     })
+
+    test('return 400 status code and if the request is incorrect', async () => {
+      expect.assertions(2)
+      const res = await request(app).delete('/v1/users/ABC')
+        .set({ Authorization: token })
+
+     
+  
+      expect(res.statusCode).toEqual(400)
+      expect(res.body).toMatchObject({
+        error: 'The request is incorrect'
+      })
+    })
+  
   
   
     test('return 403 as status code if users don t have access to feature', async () => {
