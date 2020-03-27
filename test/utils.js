@@ -71,8 +71,12 @@ const commonUser = {
   admin: false,
 }
 
+const cloneObject = (obj) => {
+  return JSON.parse(JSON.stringify(obj))
+}
+
 const getUserDataKeys = (data) => {
-  data = JSON.parse(JSON.stringify(data))
+  data = cloneObject(data)
   
   if (data.deletedAt !== undefined) delete data.deletedAt
   if (data.password  !== undefined) delete data.password
@@ -81,7 +85,7 @@ const getUserDataKeys = (data) => {
 }
 
 const clearUserData = (data) => {
-  data = JSON.parse(JSON.stringify(data))
+  data = cloneObject(data)
   
   if (data.createdAt !== undefined) delete data.createdAt
   if (data.updatedAt !== undefined) delete data.updatedAt
@@ -131,4 +135,5 @@ module.exports = {
   createUser,
   getUserDataKeys,
   clearUserData,
+  cloneObject,
 }
