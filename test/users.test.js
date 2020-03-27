@@ -10,7 +10,7 @@ const { app } = require('../src/app.js')
 let token
 
 beforeAll(async () => {
-
+  await sequelize.sync()
   await sequelize.query('SET FOREIGN_KEY_CHECKS = 0;')
   await sequelize.query('DROP TABLE IF EXISTS logs;')
   await sequelize.query('DROP TABLE IF EXISTS apllications;')
@@ -34,7 +34,7 @@ afterAll(async () => {
 
 describe('The API on /v1/users/ Endpoint at GET method should...', () => {
     beforeEach(async () => {
-      populateTable(userModel, {
+      await populateTable(userModel, {
         name: 'Rogerio Miguel',
         email: 'rogerio@hotmail.com',
         password: '12345678',
@@ -204,6 +204,18 @@ describe('The API on /v1/users/ Endpoint at GET method should...', () => {
         password: '12345678',
         admin: true
       })
+
+      populateTable(userModel, {
+        name: 'Rogerio Miguel 2 ',
+        email: 'rogerio2@hotmail.com',
+        password: '12345678',
+      })
+
+      populateTable(userModel, {
+        name: 'Rogerio Miguel 3 ',
+        email: 'rogerio3@hotmail.com',
+        password: '12345678',
+      })
   
   
       const getToken = async () => {
@@ -217,9 +229,22 @@ describe('The API on /v1/users/ Endpoint at GET method should...', () => {
   
       token = res.body.token
   
-    })
   
+
+    const getToken2 = async () => {
+      return response = await request(app).post('/v1/login').send({
+        email: 'rogerio2@hotmail.com',
+        password: '12345678'
+      })
+    }
+
+   
+    const res2 = await getToken2()
+
+    token2 = res2.body.token
+
   
+})
     afterEach(async () => {
       await sequelize.query('SET FOREIGN_KEY_CHECKS = 0;')
       await sequelize.query('TRUNCATE TABLE logs;')
@@ -251,6 +276,24 @@ describe('The API on /v1/users/ Endpoint at GET method should...', () => {
 
         /* Novas funcionalidades  changePass */
 
+        test('return 400 as status if the user not change password for other user', async () => {
+          expect.assertions(2)
+          const res = await request(app).post(`/v1/users/3/change-pass`).send({
+            "password": "123456789"
+      
+          }).set({
+            Authorization: token2
+          })
+          
+          expect(res.statusCode).toEqual(400)
+          expect(res.body).toMatchObject({ 
+            error: 'You cannot change the password for that user'
+          })
+        })
+
+
+
+
     test('return 204 as status code and the password has changed', async () => {
       expect.assertions(2)
       const res = await request(app).post('/v1/users/1/change-pass').send({
@@ -266,7 +309,7 @@ describe('The API on /v1/users/ Endpoint at GET method should...', () => {
 
     test('return 404 as status if the user id couldn be found', async () => {
       expect.assertions(2)
-      const res = await request(app).post(`/v1/users/2/change-pass`).send({
+      const res = await request(app).post(`/v1/users/4/change-pass`).send({
         "password": "123456789"
   
       }).set({
@@ -275,7 +318,7 @@ describe('The API on /v1/users/ Endpoint at GET method should...', () => {
       
       expect(res.statusCode).toEqual(404)
       expect(res.body).toMatchObject({ 
-        error: `The user id 2 couldn't be found.` 
+        error: `The user id 4 couldn't be found.` 
       })
     })
 
@@ -310,6 +353,14 @@ describe('The API on /v1/users/ Endpoint at GET method should...', () => {
         error: 'The password field must be at least 8 characters' 
       })
     })
+
+    // IMplementar Reset Pass
+
+    // Implementar FORGOTTENPASS
+
+    
+
+
 
 
   
@@ -554,13 +605,3 @@ describe('The API on /v1/users/ Endpoint at GET method should...', () => {
     })
   
   })
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
