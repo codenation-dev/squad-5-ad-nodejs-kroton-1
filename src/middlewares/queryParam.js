@@ -74,8 +74,6 @@ const processFilter = query => {
   if (filter !== undefined) {    
     const filters = filter.split(';')
 
-    console.log('filter', filters)
-
     const operators = {
       '>=': Op.gte,
       '>': Op.gt,

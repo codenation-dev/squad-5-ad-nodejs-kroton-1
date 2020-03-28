@@ -53,20 +53,20 @@ describe('The API on /v1/logs Endpoint at GET method should...', () => {
     await sequelize.query('TRUNCATE TABLE users;')
     await sequelize.sync()
 
-    populateTable(userModel, {
+    await populateTable(userModel, {
       name: 'Ronielson Macedo',
       email: 'ronielson@gmail.com',
       password: '12345678'
     })
 
-    populateTable(applicationsModel, {
+    await populateTable(applicationsModel, {
       name: 'Central de erros teste',
       description: 'Apia para armazenar e vizualizar erros',
       token: applicationToken,
       userId: 1
     })
 
-    populateTable(logsModel, {
+    await populateTable(logsModel, {
       title: "Erro de BD",
       detail: "Erro ao tentar conectar no banco de dados",
       level: "error",
