@@ -36,7 +36,6 @@ Login.login = async (req, res, next) => {
 }
 
 Login.renew = async (req, res, next) => {
-  console.log('req', req.method)
   const token = jwt.sign({
     name: req.user.name,
     email: req.user.email,

@@ -31,7 +31,9 @@ const dropAllTables = async () => {
 }
 
 const truncate = async (table) => {
-  await sequelize.query(`IF '${table}' IN (SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = (SELECT DATABASE() FROM DUAL)) THEN TRUNCATE TABLE ${table}; END IF;`)
+  // await sequelize.query(`IF '${table}' IN (SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = (SELECT DATABASE() FROM DUAL)) THEN TRUNCATE TABLE ${table}; END IF;`)
+
+  await sequelize.query(`TRUNCATE TABLE ${table}`)
 }
 
 const truncateAllTables = async () => {

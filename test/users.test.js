@@ -63,7 +63,7 @@ describe('The API on /v1/users/ Endpoint at GET method should...', () => {
     })
   
     /* Rota / */
-    test(`return 200 as status code and have 'total' and 'data' as properties`, async () => {
+    test(`return 200 as status code and have the properties`, async () => {
       expect.assertions(2)
   
       const res = await request(app).get('/v1/')
@@ -72,7 +72,8 @@ describe('The API on /v1/users/ Endpoint at GET method should...', () => {
         'login',
         'users',
         'logs',
-        'applications'
+        'applications',
+        'documentation'
       ])
     })
 
